@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Batch, Certificate, Challenge, Database, Enrollment, Otp, Passkey, User } from "@/lib/types";
+import type { Batch, Certificate, Challenge, Database, Enrollment, Otp, OutboxMessage, Passkey, ProgressRow, User } from "@/lib/types";
 
 function client(): SupabaseClient | null {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -47,7 +47,7 @@ function userToRow(user: User) {
 export async function pullRemote(): Promise<Database | null> {
   const db = client();
   if (!db) return null;
-  const [users, batches, enrollments, passkeys, otps, challenges, certificates] = await Promise.all([
+  const [users, batches, enrollments, passkeys, otps, challenges, certificates, progress, outbox] = await Promise.all([
     db.from("users").select("*"),
     db.from("batches").select("*"),
     db.from("enrollments").select("*"),
@@ -55,6 +55,8 @@ export async function pullRemote(): Promise<Database | null> {
     db.from("otps").select("*"),
     db.from("challenges").select("*"),
     db.from("certificates").select("*"),
+    db.from("progress").select("*"),
+    db.from("outbox").select("*"),
   ]);
   if (users.error || batches.error || enrollments.error || passkeys.error || otps.error || challenges.error) {
     console.error("Supabase read failed", users.error ?? batches.error ?? enrollments.error);
@@ -117,6 +119,23 @@ export async function pullRemote(): Promise<Database | null> {
       issuedAt: String(row.issued_at),
       serial: String(row.serial),
     } satisfies Certificate)),
+    progress: progress.error ? [] : (progress.data as Record<string, unknown>[]).map((row) => ({
+      id: String(row.id),
+      enrollmentId: String(row.enrollment_id),
+      moduleId: String(row.module_id),
+      completed: Boolean(row.completed),
+      testScore: row.test_score === null || row.test_score === undefined ? null : Number(row.test_score),
+      completedAt: row.completed_at ? String(row.completed_at) : null,
+    } satisfies ProgressRow)),
+    outbox: outbox.error ? [] : (outbox.data as Record<string, unknown>[]).map((row) => ({
+      id: String(row.id),
+      to: String(row.to_email),
+      subject: String(row.subject),
+      html: String(row.html),
+      createdAt: String(row.created_at),
+      status: row.status === "sent" || row.status === "failed" ? row.status : "demo",
+      key: String(row.dedupe_key),
+    } satisfies OutboxMessage)),
   };
 }
 
@@ -174,6 +193,23 @@ export async function pushRemote(state: Database) {
       user_id: row.userId,
       challenge: row.challenge,
       expires_at: row.expiresAt,
+    })));
+    await upsert(db, "progress", (state.progress ?? []).map((row: ProgressRow) => ({
+      id: row.id,
+      enrollment_id: row.enrollmentId,
+      module_id: row.moduleId,
+      completed: row.completed,
+      test_score: row.testScore,
+      completed_at: row.completedAt,
+    })));
+    await upsert(db, "outbox", (state.outbox ?? []).map((row: OutboxMessage) => ({
+      id: row.id,
+      to_email: row.to,
+      subject: row.subject,
+      html: row.html,
+      created_at: row.createdAt,
+      status: row.status,
+      dedupe_key: row.key,
     })));
     await upsert(db, "certificates", (state.certificates ?? []).map((row: Certificate) => ({
       id: row.id,

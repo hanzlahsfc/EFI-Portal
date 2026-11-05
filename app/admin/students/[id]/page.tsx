@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { issueCertificate, updateStudent } from "@/app/admin/actions";
+import { issueCertificate, saveProgress, updateStudent } from "@/app/admin/actions";
 import { courseBySlug } from "@/lib/catalog";
 import { readDb } from "@/lib/db";
+import { rowsFor, summarize } from "@/lib/progress";
 import { siteOrigin } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Student" };
@@ -26,10 +27,16 @@ export default async function StudentPage({
       enrollment: db.enrollments.find((item) => item.userId === user.id) ?? null,
       batches: db.batches,
       certificate: db.certificates.find((item) => item.userId === user.id) ?? null,
+      summary: (() => {
+        const enrollment = db.enrollments.find((item) => item.userId === user.id) ?? null;
+        const course = courseBySlug(enrollment?.courseSlug ?? "");
+        const batch = db.batches.find((item) => item.id === enrollment?.batchId) ?? null;
+        return enrollment && course ? summarize(course, rowsFor(db, enrollment.id), batch) : null;
+      })(),
     };
   });
   if (!data) notFound();
-  const { user, enrollment, batches, certificate } = data;
+  const { user, enrollment, batches, certificate, summary } = data;
   const course = courseBySlug(enrollment?.courseSlug ?? "");
   const headerList = await headers();
   const host = headerList.get("x-forwarded-host") ?? headerList.get("host");
@@ -86,6 +93,27 @@ export default async function StudentPage({
         </label>
         <div className="span-2"><button className="btn" type="submit">Save record</button></div>
       </form>
+      {summary && enrollment ? (
+        <form className="panel stack" action={saveProgress}>
+          <h2>Progress · {summary.percent}%</h2>
+          <input type="hidden" name="id" value={user.id} />
+          <input type="hidden" name="enrollmentId" value={enrollment.id} />
+          {summary.modules.map(({ module, row }) => (
+            <div className="row-between" key={module.id}>
+              <input type="hidden" name="moduleId" value={module.id} />
+              <label className="check">
+                <input type="checkbox" name="completed" value={module.id} defaultChecked={row?.completed ?? false} />
+                <span> {module.code} {module.title}</span>
+              </label>
+              <label className="field" style={{ minWidth: 120 }}>
+                <span>Test</span>
+                <input name={`score-${module.id}`} defaultValue={row?.testScore ?? ""} inputMode="decimal" />
+              </label>
+            </div>
+          ))}
+          <button className="btn" type="submit">Save progress</button>
+        </form>
+      ) : null}
     </div>
   );
 }
