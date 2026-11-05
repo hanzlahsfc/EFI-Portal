@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { courseBySlug } from "@/lib/catalog";
+import { queueClassReminders } from "@/lib/progress";
 import { hashPassword, randomId, verifyPassword } from "@/lib/codec";
 import type { EnrollmentStatus } from "@/lib/types";
 import { emailTaken, nextRoll, writeDb } from "@/lib/db";
@@ -155,4 +156,40 @@ export async function issueCertificate(formData: FormData) {
   });
   if (error) fail(`/admin/students/${id}`, error);
   redirect(`/admin/students/${id}?notice=Certificate+issued`);
+}
+
+export async function saveProgress(formData: FormData) {
+  await requireUser("staff");
+  const id = String(formData.get("id") ?? "");
+  const enrollmentId = String(formData.get("enrollmentId") ?? "");
+  const moduleIds = formData.getAll("moduleId").map(String);
+  const completed = new Set(formData.getAll("completed").map(String));
+  const error = await writeDb((db) => {
+    const enrollment = db.enrollments.find((item) => item.id === enrollmentId && item.userId === id);
+    if (!enrollment) return "That enrollment was not found.";
+    for (const moduleId of moduleIds) {
+      const raw = String(formData.get(`score-${moduleId}`) ?? "").trim();
+      let testScore: number | null = null;
+      if (raw) {
+        testScore = Number(raw);
+        if (!Number.isFinite(testScore) || testScore < 0 || testScore > 100) return "Test scores are from 0 to 100.";
+      }
+      const row = db.progress.find((item) => item.enrollmentId === enrollmentId && item.moduleId === moduleId);
+      if (!row) return "Progress for that module is missing.";
+      const nowDone = completed.has(moduleId);
+      if (nowDone && !row.completed) row.completedAt = new Date().toISOString();
+      if (!nowDone) row.completedAt = null;
+      row.completed = nowDone;
+      row.testScore = testScore;
+    }
+    return null;
+  });
+  if (error) fail(`/admin/students/${id}`, error);
+  redirect(`/admin/students/${id}?notice=Progress+saved`);
+}
+
+export async function sendClassReminders() {
+  await requireUser("staff");
+  const result = await writeDb((db) => queueClassReminders(db));
+  redirect(`/admin/outbox?notice=${encodeURIComponent(`${result.queued} reminder${result.queued === 1 ? "" : "s"} queued for ${result.date}`)}`);
 }

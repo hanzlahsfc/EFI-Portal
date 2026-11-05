@@ -25,6 +25,10 @@ Apply `supabase/migrations/001_portal.sql` and `002_certificates.sql`, then set 
 
 Public certificate search is `/certificate?q=EFI-1024`. The PDF is `/api/certificates/EFI-1024`. Staff issue a certificate from the student record.
 
+Syllabus and progress live on the student desk. Ali Raza's sample record is complete. Hassan Iqbal's sample record has the first two modules done. Staff edit module ticks and test scores on the student record.
+
+Class reminders run at 08:00 Pakistan time (`/api/cron/reminders`). Set `CRON_SECRET` in production. Staff can also queue the day's mail from Reminders. Apply `supabase/migrations/003_progress.sql` with the earlier migrations.
+
 Branch map for quote Q-004:
 
 | Branch | Feature |

@@ -77,6 +77,25 @@ export interface Certificate {
   serial: string;
 }
 
+export interface ProgressRow {
+  id: string;
+  enrollmentId: string;
+  moduleId: string;
+  completed: boolean;
+  testScore: number | null;
+  completedAt: string | null;
+}
+
+export interface OutboxMessage {
+  id: string;
+  to: string;
+  subject: string;
+  html: string;
+  createdAt: string;
+  status: "demo" | "sent" | "failed";
+  key: string;
+}
+
 export interface Database {
   users: User[];
   batches: Batch[];
@@ -85,4 +104,6 @@ export interface Database {
   otps: Otp[];
   challenges: Challenge[];
   certificates: Certificate[];
+  progress: ProgressRow[];
+  outbox: OutboxMessage[];
 }

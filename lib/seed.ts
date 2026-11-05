@@ -130,6 +130,8 @@ export function createSeed(): Database {
     otps: [],
     challenges: [],
     certificates: [aliCertificate()],
+    progress: [],
+    outbox: [],
   };
 }
 

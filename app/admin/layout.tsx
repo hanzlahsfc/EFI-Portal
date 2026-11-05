@@ -5,6 +5,7 @@ const items = [
   { href: "/admin", label: "Desk" },
   { href: "/admin/students", label: "Students" },
   { href: "/admin/batches", label: "Batches" },
+  { href: "/admin/outbox", label: "Reminders" },
   { href: "/admin/account", label: "Account" },
 ];
 

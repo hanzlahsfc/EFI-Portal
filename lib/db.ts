@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { pullRemote, pushRemote } from "@/lib/remote";
+import { syncProgress } from "@/lib/progress";
 import { createSeed, ensureCertificates, ensurePasswords } from "@/lib/seed";
 import type { Database } from "@/lib/types";
 
@@ -19,6 +20,8 @@ function normalize(raw: Partial<Database>): Database {
     otps: raw.otps ?? [],
     challenges: raw.challenges ?? [],
     certificates: raw.certificates ?? [],
+    progress: raw.progress ?? [],
+    outbox: raw.outbox ?? [],
   };
 }
 
@@ -52,7 +55,7 @@ async function load() {
   const remote = await pullRemote();
   const file = readFile();
   state = remote ?? file ?? createSeed();
-  const changed = (await ensurePasswords(state)) || ensureCertificates(state);
+  const changed = (await ensurePasswords(state)) || ensureCertificates(state) || syncProgress(state);
   if (!file || changed || remote) {
     writeFile(state);
     if (changed || !remote) await pushRemote(state);
@@ -80,6 +83,7 @@ export function writeDb<T>(fn: (db: Database) => T | Promise<T>) {
   return enqueue(async () => {
     const db = await load();
     const result = await fn(db);
+    syncProgress(db);
     prune(db);
     await persist(db);
     return result;
