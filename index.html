@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EFI v2 — Redline Lab Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #C11116;
+  --secondary: #6E0B0B;
+  --surface: #F4F5F7;
+  --asphalt: #15171B;
+  --steel: #C9CDD3;
+  --text: #16181C;
+  --muted: #5C6168;
+  --amber: #F2A50C;
+  --font-h: 'Barlow Condensed', sans-serif;
+  --font-b: 'Barlow', sans-serif;
+  --font-m: 'IBM Plex Mono', monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: var(--font-b); color: var(--text); background: #fff; }
+img { max-width:100%; display:block; }
+.chamfer { clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
+
+/* ===== topbar ===== */
+.topbar { background:#0c0e11; color:#c8c8c8; font-family:var(--font-m); font-size:11.5px; padding:8px 5%; display:flex; justify-content:space-between; }
+.topbar b { color:#fff; font-weight:500; }
+.topbar .l span { margin-right:22px; }
+.topbar a { color:#c8c8c8; text-decoration:none; margin-left:14px; }
+.topbar a:hover { color:var(--primary); }
+
+/* ===== brand band ===== */
+.brandband {
+  position:relative; display:flex; align-items:center; justify-content:center; padding:30px 5%;
+  border-top:1px solid #2a1215; border-bottom:3px solid var(--primary);
+  background:
+    radial-gradient(ellipse 80% 140% at 12% 50%, rgba(193,17,22,.35), transparent 60%),
+    radial-gradient(ellipse 80% 140% at 88% 50%, rgba(193,17,22,.35), transparent 60%),
+    linear-gradient(180deg,#241414 0%,#110b0b 100%);
+  overflow:hidden;
+}
+.brandband .gear { position:absolute; top:50%; transform:translateY(-50%); font-size:170px; line-height:1; color:rgba(255,255,255,.045); user-select:none; }
+.brandband .gear.l { left:3%; } .brandband .gear.r { right:3%; }
+.brandband img { height:110px; background:#fff; padding:6px 16px; filter:drop-shadow(0 10px 30px rgba(0,0,0,.6)); position:relative; z-index:1; }
+
+/* ===== nav ===== */
+.nav { background:var(--asphalt); display:flex; align-items:center; justify-content:center; position:sticky; top:0; z-index:50; }
+.nav .links { display:flex; gap:38px; }
+.nav a { font-family:var(--font-h); font-weight:600; font-size:16px; letter-spacing:2px; text-transform:uppercase; color:#cfd2d6; text-decoration:none; padding:16px 0; border-bottom:3px solid transparent; }
+.nav a:hover, .nav a.on { color:#fff; border-color:var(--primary); }
+.nav .search { position:absolute; right:5%; color:#cfd2d6; }
+.nav .search:hover { color:var(--primary); }
+
+/* ===== hero ===== */
+.hero { position:relative; min-height:640px; display:flex; align-items:center; padding:80px 5% 120px; overflow:hidden; }
+.hero .bg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.hero::after { content:''; position:absolute; inset:0; background:linear-gradient(100deg, rgba(13,14,17,.93) 30%, rgba(110,11,11,.55) 75%, rgba(13,14,17,.45)); }
+.hero .inner { position:relative; z-index:1; max-width:680px; color:#fff; }
+.hero .chip { display:inline-block; font-family:var(--font-m); font-size:11px; letter-spacing:2px; color:var(--amber); border:1px solid rgba(242,165,12,.5); padding:6px 14px; text-transform:uppercase; }
+.hero h1 { font-family:var(--font-h); font-weight:700; font-size:72px; line-height:.95; text-transform:uppercase; margin:18px 0; }
+.hero h1 em { font-style:normal; color:var(--primary); text-shadow:0 0 30px rgba(193,17,22,.7); }
+.hero p { font-size:16px; line-height:1.7; color:#d8d8d8; max-width:540px; margin-bottom:32px; }
+.btn { font-family:var(--font-h); font-weight:700; font-size:16px; letter-spacing:2px; text-transform:uppercase; padding:15px 36px; text-decoration:none; display:inline-block; }
+.btn-red { background:var(--primary); color:#fff; }
+.btn-ghost { color:#fff; border:1.5px solid rgba(255,255,255,.6); margin-left:12px; }
+.btn-ghost:hover { border-color:#fff; }
+
+/* telemetry rail */
+.telemetry { position:absolute; right:5%; top:50%; transform:translateY(-50%); z-index:1; background:rgba(13,14,17,.82); border:1px solid #333; border-left:3px solid var(--primary); padding:22px 26px; font-family:var(--font-m); backdrop-filter:blur(4px); }
+.telemetry .row { padding:9px 0; border-bottom:1px dashed #333; display:flex; justify-content:space-between; gap:30px; }
+.telemetry .row:last-child { border:0; }
+.telemetry .k { color:#8b9096; font-size:10.5px; letter-spacing:1.5px; text-transform:uppercase; }
+.telemetry .v { color:#fff; font-size:12px; }
+.telemetry .v.ok { color:var(--amber); }
+
+/* ===== feature panels (flyer program-highlights style) ===== */
+.features { position:relative; z-index:5; margin-top:-70px; padding:0 5%; display:grid; grid-template-columns:repeat(3,1fr); gap:22px; max-width:1400px; margin-left:auto; margin-right:auto; }
+.fcard { background:linear-gradient(160deg,#eceef1 0%,#c6c9ce 55%,#aeb2b8 100%); border:1px solid #9a9ea5; border-top:3px solid var(--primary); border-radius:3px; padding:24px; display:flex; gap:16px; align-items:center; box-shadow:0 16px 36px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.7); }
+.fcard .ico { width:50px; height:50px; flex-shrink:0; border-radius:50%; background:var(--asphalt); border:3px solid var(--primary); display:flex; align-items:center; justify-content:center; font-size:20px; }
+.fcard h3 { font-family:var(--font-h); font-size:19px; letter-spacing:1px; text-transform:uppercase; }
+.fcard .cap { font-family:var(--font-m); font-size:10.5px; letter-spacing:1.5px; color:var(--primary); text-transform:uppercase; }
+.fcard p { font-size:12.5px; color:#444; line-height:1.5; margin-top:3px; }
+
+/* ===== sections ===== */
+section { padding:80px 5%; position:relative; }
+.sec-head { margin-bottom:44px; }
+.sec-head .kick { font-family:var(--font-m); font-size:11px; letter-spacing:2.5px; color:var(--primary); text-transform:uppercase; }
+.sec-head h2 { font-family:var(--font-h); font-weight:700; font-size:42px; text-transform:uppercase; margin-top:6px; }
+.sec-head h2::after { content:''; display:block; width:64px; height:4px; background:var(--primary); margin-top:10px; }
+.sec-head.center { text-align:center; } .sec-head.center h2::after { margin:10px auto 0; }
+
+.circuit { background-color:var(--surface); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cg fill='none' stroke='%23c9ced6' stroke-width='1.5'%3E%3Cpath d='M10 40h50v30h40'/%3E%3Cpath d='M150 10v50h-30v40'/%3E%3Cpath d='M20 160h60v-30'/%3E%3Cpath d='M160 120v60h30'/%3E%3Ccircle cx='10' cy='40' r='4'/%3E%3Ccircle cx='100' cy='70' r='4'/%3E%3Ccircle cx='120' cy='100' r='4'/%3E%3Ccircle cx='80' cy='160' r='4'/%3E%3Ccircle cx='150' cy='10' r='4'/%3E%3Ccircle cx='190' cy='180' r='4'/%3E%3C/g%3E%3C/svg%3E"); }
+
+/* ===== course cards ===== */
+.courses { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; max-width:1400px; margin:0 auto; }
+.course { background:#fff; border:1px solid #e2e4e8; border-top:3px solid var(--primary); box-shadow:0 6px 24px rgba(0,0,0,.07); transition:transform .2s, box-shadow .2s; display:flex; flex-direction:column; }
+.course:hover { transform:translateY(-6px); box-shadow:0 18px 40px rgba(0,0,0,.14); }
+.course .thumb { position:relative; aspect-ratio:16/10; overflow:hidden; }
+.course .thumb img { width:100%; height:100%; object-fit:cover; }
+.course .tag { position:absolute; top:10px; left:10px; background:var(--primary); color:#fff; font-family:var(--font-m); font-size:10px; letter-spacing:1.5px; text-transform:uppercase; padding:5px 10px; }
+.course .body { padding:20px; display:flex; flex-direction:column; flex:1; }
+.course h3 { font-family:var(--font-h); font-size:20px; text-transform:uppercase; letter-spacing:.5px; }
+.course .spec { font-family:var(--font-m); font-size:10.5px; color:var(--muted); margin:10px 0 6px; line-height:1.8; }
+.course .spec b { color:var(--text); }
+.course .foot { margin-top:auto; border-top:1px solid #eee; padding-top:14px; display:flex; justify-content:space-between; align-items:center; }
+.course .price { font-family:var(--font-m); font-weight:500; font-size:16px; color:var(--primary); }
+.course .enroll { font-family:var(--font-h); font-weight:700; font-size:14px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text); text-decoration:none; }
+.course .enroll:hover { color:var(--primary); }
+
+/* ===== certificate terminal (WILDCARD) ===== */
+.cert { background-color:var(--secondary); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.10' stroke-width='1.5'%3E%3Cpath d='M10 40h50v30h40'/%3E%3Cpath d='M150 10v50h-30v40'/%3E%3Cpath d='M20 160h60v-30'/%3E%3Cpath d='M160 120v60h30'/%3E%3Ccircle cx='10' cy='40' r='4'/%3E%3Ccircle cx='100' cy='70' r='4'/%3E%3Ccircle cx='120' cy='100' r='4'/%3E%3Ccircle cx='80' cy='160' r='4'/%3E%3Ccircle cx='150' cy='10' r='4'/%3E%3Ccircle cx='190' cy='180' r='4'/%3E%3C/g%3E%3C/svg%3E"); }
+.cert .sec-head h2, .cert .sec-head { color:#fff; }
+.cert .sec-head .kick { color:var(--amber); }
+.term { max-width:640px; margin:0 auto; background:var(--asphalt); border:1px solid #333; box-shadow:0 24px 60px rgba(0,0,0,.4); }
+.term .bar { display:flex; align-items:center; gap:8px; padding:10px 16px; border-bottom:1px solid #2a2d33; }
+.term .dot { width:10px; height:10px; border-radius:50%; }
+.term .dot.r { background:var(--primary);} .term .dot.y { background:var(--amber);} .term .dot.g { background:#3fbf5f;}
+.term .title { margin-left:auto; font-family:var(--font-m); font-size:10.5px; color:#8b9096; letter-spacing:2px; text-transform:uppercase; }
+.term .screen { padding:26px 24px 30px; font-family:var(--font-m); }
+.term .line { color:#8b9096; font-size:12px; margin-bottom:6px; }
+.term .line .ok { color:#3fbf5f; }
+.term form { display:flex; align-items:center; margin-top:14px; }
+.term .prompt { color:var(--primary); font-size:14px; font-weight:500; margin-right:10px; white-space:nowrap; }
+.term input { flex:1; background:transparent; border:0; border-bottom:1px solid #3a3e45; color:#fff; font-family:var(--font-m); font-size:14px; padding:10px 4px; outline:none; min-width:0; }
+.term input:focus { border-color:var(--primary); }
+.term input::placeholder { color:#4a4f55; }
+.term button { background:var(--primary); color:#fff; border:0; font-family:var(--font-m); font-size:12px; letter-spacing:2px; text-transform:uppercase; padding:12px 24px; margin-left:16px; cursor:pointer; }
+.term .hint { color:#4a4f55; font-size:10.5px; margin-top:18px; }
+
+/* ===== spec-frame images ===== */
+.specframe { max-width:920px; margin:0 auto; border:1px solid var(--steel); padding:14px; background:#fff; position:relative; box-shadow:0 14px 40px rgba(0,0,0,.12); }
+.specframe::before, .specframe::after { content:''; position:absolute; width:26px; height:26px; border:3px solid var(--primary); }
+.specframe::before { top:-3px; left:-3px; border-right:0; border-bottom:0; }
+.specframe::after { bottom:-3px; right:-3px; border-left:0; border-top:0; }
+.specframe img { width:100%; }
+
+/* ===== footer ===== */
+footer { background:var(--asphalt); color:#9aa0a7; padding:64px 5% 0; font-size:13.5px; }
+.f-grid { display:grid; grid-template-columns:1.4fr 1fr 1fr 1.2fr; gap:40px; padding-bottom:44px; max-width:1400px; margin:0 auto; }
+.f-grid img { height:56px; background:#fff; padding:4px 10px; margin-bottom:16px; }
+.f-grid h4 { font-family:var(--font-h); color:#fff; font-size:16px; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:16px; }
+.f-grid h4::after { content:''; display:block; width:28px; height:2px; background:var(--primary); margin-top:6px; }
+.f-grid ul { list-style:none; } .f-grid li { margin-bottom:6px; }
+.f-grid a { color:#9aa0a7; text-decoration:none; } .f-grid a:hover { color:var(--amber); }
+.f-grid .mono { font-family:var(--font-m); font-size:11.5px; line-height:2; }
+.social { display:flex; gap:10px; margin-top:16px; }
+.social a { width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; border:1px solid #3a3e45; color:#ccc; font-family:var(--font-m); font-size:10px; text-decoration:none; }
+.social a:hover { background:var(--primary); border-color:var(--primary); color:#fff; }
+.f-bar { border-top:1px solid #26292e; padding:18px 0; font-family:var(--font-m); font-size:11px; display:flex; justify-content:space-between; max-width:1400px; margin:0 auto; }
+.f-bar a { color:#9aa0a7; text-decoration:none; } .f-bar a:hover { color:var(--primary); }
+
+@media (max-width:1000px) {
+  .features,.courses,.f-grid { grid-template-columns:1fr 1fr; }
+  .telemetry { display:none; }
+  .hero h1 { font-size:48px; }
+}
+@media (max-width:600px) {
+  .features,.courses,.f-grid { grid-template-columns:1fr; }
+  .nav .links { gap:18px; } .nav a { font-size:13px; }
+  .term form { flex-wrap:wrap; } .term button { margin:14px 0 0; width:100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="topbar">
+  <div class="l"><span>CALL/WA <b>+92-370-438-1083</b></span><span>LOC <b>53B AITCHISON SOCIETY, LHR</b></span><span>HRS <b>MON–THU 2–6PM · FRI–SUN 3–9PM</b></span></div>
+  <div class="r"><a href="#">VERIFY CERT</a><a href="#">LOGIN</a></div>
+</div>
+
+<div class="brandband">
+  <span class="gear l">&#9881;</span>
+  <img src="assets/efi-logo.jpeg" alt="EFI Future Intelligence Institute">
+  <span class="gear r">&#9881;</span>
+</div>
+
+<div class="nav">
+  <nav class="links">
+    <a href="#" class="on">Home</a>
+    <a href="#courses">Courses</a>
+    <a href="#cert">Certificate</a>
+    <a href="#schedule">Schedule</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <a class="search" href="#" aria-label="Search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  </a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <img class="bg" src="assets/efi-hero-photo.jpg" alt="">
+  <div class="inner">
+    <span class="chip">ISO Registered · Admissions Open</span>
+    <h1>Auto Electrician<br><em>Certification</em> Program</h1>
+    <p>Hands-on training in computerized diagnostics, wiring &amp; relay systems, sensors &amp; actuators, CAN bus and module programming — on modern scanners, in a real lab.</p>
+    <a class="btn btn-red chamfer" href="#courses">View Courses</a>
+    <a class="btn btn-ghost chamfer" href="#cert">Verify Certificate</a>
+  </div>
+  <div class="telemetry">
+    <div class="row"><span class="k">ISO Cert</span><span class="v ok">REGISTERED</span></div>
+    <div class="row"><span class="k">Training</span><span class="v">HANDS-ON LAB</span></div>
+    <div class="row"><span class="k">Recognition</span><span class="v">GULF + GLOBAL</span></div>
+    <div class="row"><span class="k">Equipment</span><span class="v">OBD-II SCAN</span></div>
+  </div>
+</div>
+
+<!-- FEATURE PANELS -->
+<div class="features">
+  <div class="fcard"><div class="ico">&#128295;</div><div><div class="cap">01 / Practical</div><h3>Daily Hands-On Lab</h3><p>Live vehicles &amp; bench rigs every session — not just theory.</p></div></div>
+  <div class="fcard"><div class="ico">&#127942;</div><div><div class="cap">02 / Certified</div><h3>Global Certification</h3><p>ISO registered — recognized in Gulf countries &amp; worldwide.</p></div></div>
+  <div class="fcard"><div class="ico">&#128187;</div><div><div class="cap">03 / Equipment</div><h3>Modern Scanners</h3><p>OBD-II scanners, key-fob programmers, car modulators.</p></div></div>
+</div>
+
+<!-- COURSES -->
+<section class="circuit" id="courses">
+  <div class="sec-head center"><div class="kick">// Admissions Open</div><h2>Training Programs</h2></div>
+  <div class="courses">
+    <div class="course"><div class="thumb"><img src="assets/efi-thumb-1.jpg" alt=""><span class="tag">Weekdays</span></div>
+      <div class="body"><h3>3-Month Certification</h3>
+      <div class="spec"><b>MON–THU</b> · 2–4PM / 4–6PM<br>Fundamentals · Battery · Wiring</div>
+      <div class="foot"><span class="price">PKR 25,000</span><a class="enroll" href="#">Enroll &rsaquo;</a></div></div></div>
+    <div class="course"><div class="thumb"><img src="assets/efi-thumb-3.jpg" alt=""><span class="tag">Weekdays</span></div>
+      <div class="body"><h3>6-Month Certification</h3>
+      <div class="spec"><b>MON–THU</b> · Full syllabus<br>Sensors · EFI Sys · Diagnostics · OBD-II</div>
+      <div class="foot"><span class="price">PKR 50,000</span><a class="enroll" href="#">Enroll &rsaquo;</a></div></div></div>
+    <div class="course"><div class="thumb"><img src="assets/efi-thumb-4.jpg" alt=""><span class="tag">Weekend</span></div>
+      <div class="body"><h3>6-Month Pro &amp; Technical</h3>
+      <div class="spec"><b>FRI–SUN</b> · 6–9PM<br>CAN Bus · Module · Key-Fob Prog</div>
+      <div class="foot"><span class="price">PKR 50,000</span><a class="enroll" href="#">Enroll &rsaquo;</a></div></div></div>
+    <div class="course"><div class="thumb"><img src="assets/efi-thumb-2.jpg" alt=""><span class="tag">Weekend</span></div>
+      <div class="body"><h3>3-Month Weekend</h3>
+      <div class="spec"><b>FRI–SUN</b> · 3–6PM<br>Core auto electrical · Working students</div>
+      <div class="foot"><span class="price">PKR 25,000</span><a class="enroll" href="#">Enroll &rsaquo;</a></div></div></div>
+  </div>
+</section>
+
+<!-- CERT TERMINAL -->
+<section class="cert" id="cert">
+  <div class="sec-head center"><div class="kick">// Scan Tool</div><h2>Verify Your Certificate</h2></div>
+  <div class="term">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">EFI / CERT-VERIFY v1.0</span></div>
+    <div class="screen">
+      <div class="line"><span class="ok">READY</span> — certificate database connected</div>
+      <div class="line">Enter your roll number to pull your certificate</div>
+      <form action="verify.html" method="get"><span class="prompt">EFI&gt;</span><input type="search" name="q" placeholder="EFI-1024" required><button type="submit">Scan</button></form>
+      <div class="hint">// can't find yours? call/whatsapp +92-370-438-1083 with your name &amp; batch</div>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule">
+  <div class="sec-head center"><div class="kick">// Weekly Training</div><h2>Class Timetable</h2></div>
+  <div class="specframe"><img src="assets/efi-timetable.jpeg" alt="Weekly training schedule"></div>
+</section>
+
+<!-- OUTLINE -->
+<section class="circuit">
+  <div class="sec-head center"><div class="kick">// Syllabus</div><h2>Course Outline</h2></div>
+  <div class="specframe"><img src="assets/efi-outline.jpeg" alt="Comprehensive course outline"></div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <div class="f-grid">
+    <div><img src="assets/efi-logo.jpeg" alt="EFI"><p>Professional automotive electrical &amp; EFI diagnostics training. ISO registered, hands-on lab, modern scanners.</p></div>
+    <div><h4>Courses</h4><ul><li><a href="#">3-Month Certification</a></li><li><a href="#">6-Month Certification</a></li><li><a href="#">6-Month Pro &amp; Technical</a></li><li><a href="#">3-Month Weekend</a></li></ul></div>
+    <div><h4>Quick Links</h4><ul><li><a href="#">Verify Certificate</a></li><li><a href="#">All Courses</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Refund &amp; Transfer</a></li></ul></div>
+    <div><h4>Contact</h4><div class="mono">53B AITCHISON SOCIETY<br>LAHORE, PK<br>+92-370-438-1083<br>WWW.EFIINSTITUTE.COM</div>
+      <div class="social"><a href="#">FB</a><a href="#">IG</a><a href="https://wa.me/923704381083">WA</a><a href="#">YT</a></div></div>
+  </div>
+  <div class="f-bar"><span>© 2026 EFI FUTURE INTELLIGENCE INSTITUTE</span><span>DEVELOPED BY <a href="https://cemzlah.com">CEMZLAH</a></span></div>
+</footer>
+
+</body>
+</html>

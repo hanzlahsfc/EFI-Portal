@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Certificate — EFI Future Intelligence Institute</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root { --primary:#C11116; --secondary:#6E0B0B; --asphalt:#15171B; --amber:#F2A50C;
+  --fh:'Barlow Condensed',sans-serif; --fb:'Barlow',sans-serif; --fm:'IBM Plex Mono',monospace; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--fb); background:var(--asphalt); color:#fff; min-height:100vh; display:flex; flex-direction:column; }
+.topbar { background:#0c0e11; color:#c8c8c8; font-family:var(--fm); font-size:11.5px; padding:8px 5%; }
+.brandband { padding:26px 5%; text-align:center; border-bottom:3px solid var(--primary); }
+.brandband img { height:90px; background:#fff; padding:6px 16px; }
+.wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:60px 5%; }
+.term { width:100%; max-width:680px; background:#0d0e11; border:1px solid #333; box-shadow:0 24px 60px rgba(0,0,0,.5); }
+.bar { display:flex; align-items:center; gap:8px; padding:10px 16px; border-bottom:1px solid #2a2d33; }
+.dot { width:10px; height:10px; border-radius:50%; }
+.r { background:var(--primary);} .y { background:var(--amber);} .g { background:#3fbf5f;}
+.title { margin-left:auto; font-family:var(--fm); font-size:10.5px; color:#8b9096; letter-spacing:2px; }
+.screen { padding:28px 26px 32px; font-family:var(--fm); }
+.line { color:#8b9096; font-size:12px; margin-bottom:8px; }
+.line .ok { color:#3fbf5f; }
+.q { color:#fff; font-size:15px; margin:14px 0 20px; }
+.q span { color:var(--primary); }
+form { display:flex; align-items:center; }
+.prompt { color:var(--primary); font-size:14px; margin-right:10px; }
+input { flex:1; background:transparent; border:0; border-bottom:1px solid #3a3e45; color:#fff; font-family:var(--fm); font-size:14px; padding:10px 4px; outline:none; min-width:0; }
+input:focus { border-color:var(--primary); }
+button { background:var(--primary); color:#fff; border:0; font-family:var(--fm); font-size:12px; letter-spacing:2px; text-transform:uppercase; padding:12px 24px; margin-left:16px; cursor:pointer; }
+.note { color:#4a4f55; font-size:10.5px; margin-top:22px; }
+.back { display:inline-block; margin-top:26px; color:#8b9096; font-family:var(--fm); font-size:11px; text-decoration:none; letter-spacing:1.5px; }
+.back:hover { color:var(--primary); }
+</style>
+</head>
+<body>
+<div class="topbar">EFI / CERT-VERIFY</div>
+<div class="brandband"><img src="assets/efi-logo.jpeg" alt="EFI Future Intelligence Institute"></div>
+<div class="wrap">
+  <div class="term">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title">EFI / CERT-VERIFY v1.0</span></div>
+    <div class="screen">
+      <div class="line"><span class="ok">READY</span> — certificate database connected</div>
+      <div class="q" id="result">Search a roll number to pull a certificate — e.g. <span>EFI-1024</span></div>
+      <form action="verify.html" method="get"><span class="prompt">EFI&gt;</span><input type="search" name="q" placeholder="EFI-1024" required><button type="submit">Scan</button></form>
+      <div class="note">// certificate downloads go live with the student portal — call/whatsapp +92-370-438-1083</div>
+      <a class="back" href="index.html">&larr; BACK TO HOME</a>
+    </div>
+  </div>
+</div>
+<script>
+  const q = new URLSearchParams(location.search).get('q');
+  if (q) document.getElementById('result').innerHTML =
+    'Lookup for roll no. <span>' + q.replace(/</g,'&lt;') + '</span> — portal integration pending. Certificates will appear here once the student portal is live.';
+</script>
+</body>
+</html>
