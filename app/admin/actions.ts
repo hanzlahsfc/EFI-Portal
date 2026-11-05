@@ -3,10 +3,10 @@
 import { redirect } from "next/navigation";
 import { courseBySlug } from "@/lib/catalog";
 import { hashPassword, randomId, verifyPassword } from "@/lib/codec";
+import type { EnrollmentStatus } from "@/lib/types";
 import { emailTaken, nextRoll, writeDb } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { cleanCnic, cleanEmail, cleanName, cleanPassword, cleanPhone } from "@/lib/validate";
-import type { EnrollmentStatus } from "@/lib/types";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
@@ -125,4 +125,34 @@ export async function changeStaffPassword(formData: FormData) {
   });
   if (error) fail("/admin/account", error);
   redirect("/admin/account?notice=Password+updated");
+}
+
+export async function issueCertificate(formData: FormData) {
+  await requireUser("staff");
+  const id = String(formData.get("id") ?? "");
+  const error = await writeDb((db) => {
+    const user = db.users.find((item) => item.id === id && item.role === "student");
+    const enrollment = db.enrollments.find((item) => item.userId === id);
+    if (!user?.rollNumber || !enrollment) return "That student is not on a course.";
+    if (enrollment.status === "invited" || enrollment.status === "withdrawn") {
+      return "Issue a certificate only after the student is active or completed.";
+    }
+    if (db.certificates.some((item) => item.userId === user.id)) return null;
+    const course = courseBySlug(enrollment.courseSlug);
+    const digits = user.rollNumber.replace(/\D/g, "");
+    db.certificates.push({
+      id: randomId(9),
+      userId: user.id,
+      enrollmentId: enrollment.id,
+      rollNumber: user.rollNumber,
+      studentName: user.fullName,
+      courseName: course?.name ?? enrollment.courseSlug,
+      issuedAt: new Date().toISOString(),
+      serial: `EFI-C-${digits}`,
+    });
+    enrollment.status = "completed";
+    return null;
+  });
+  if (error) fail(`/admin/students/${id}`, error);
+  redirect(`/admin/students/${id}?notice=Certificate+issued`);
 }

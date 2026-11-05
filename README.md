@@ -21,7 +21,9 @@ Password and Google sign-in then ask for an email code. Without `RESEND_API_KEY`
 
 Shopify can open a student record with `POST /api/shopify/enroll` and header `x-efi-secret: $EFI_SHOPIFY_SECRET`. Body: `email`, `fullName`, `phone`, `courseSlug`, `orderId`.
 
-Apply `supabase/migrations/001_portal.sql` and set `SUPABASE_URL` plus `SUPABASE_SERVICE_ROLE_KEY` to store the roll in Supabase. With those unset, the desk uses `data/db.json`.
+Apply `supabase/migrations/001_portal.sql` and `002_certificates.sql`, then set `SUPABASE_URL` plus `SUPABASE_SERVICE_ROLE_KEY` to store the roll in Supabase. With those unset, the desk uses `data/db.json`.
+
+Public certificate search is `/certificate?q=EFI-1024`. The PDF is `/api/certificates/EFI-1024`. Staff issue a certificate from the student record.
 
 Branch map for quote Q-004:
 

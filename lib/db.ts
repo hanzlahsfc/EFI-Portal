@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { pullRemote, pushRemote } from "@/lib/remote";
-import { createSeed, ensurePasswords } from "@/lib/seed";
+import { createSeed, ensureCertificates, ensurePasswords } from "@/lib/seed";
 import type { Database } from "@/lib/types";
 
 const filePath = path.join(process.cwd(), "data", "db.json");
@@ -18,6 +18,7 @@ function normalize(raw: Partial<Database>): Database {
     passkeys: raw.passkeys ?? [],
     otps: raw.otps ?? [],
     challenges: raw.challenges ?? [],
+    certificates: raw.certificates ?? [],
   };
 }
 
@@ -51,7 +52,7 @@ async function load() {
   const remote = await pullRemote();
   const file = readFile();
   state = remote ?? file ?? createSeed();
-  const changed = await ensurePasswords(state);
+  const changed = (await ensurePasswords(state)) || ensureCertificates(state);
   if (!file || changed || remote) {
     writeFile(state);
     if (changed || !remote) await pushRemote(state);
