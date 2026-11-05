@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Batch, Challenge, Database, Enrollment, Otp, Passkey, User } from "@/lib/types";
+import type { Batch, Certificate, Challenge, Database, Enrollment, Otp, Passkey, User } from "@/lib/types";
 
 function client(): SupabaseClient | null {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -47,13 +47,14 @@ function userToRow(user: User) {
 export async function pullRemote(): Promise<Database | null> {
   const db = client();
   if (!db) return null;
-  const [users, batches, enrollments, passkeys, otps, challenges] = await Promise.all([
+  const [users, batches, enrollments, passkeys, otps, challenges, certificates] = await Promise.all([
     db.from("users").select("*"),
     db.from("batches").select("*"),
     db.from("enrollments").select("*"),
     db.from("passkeys").select("*"),
     db.from("otps").select("*"),
     db.from("challenges").select("*"),
+    db.from("certificates").select("*"),
   ]);
   if (users.error || batches.error || enrollments.error || passkeys.error || otps.error || challenges.error) {
     console.error("Supabase read failed", users.error ?? batches.error ?? enrollments.error);
@@ -106,6 +107,16 @@ export async function pullRemote(): Promise<Database | null> {
       challenge: String(row.challenge),
       expiresAt: String(row.expires_at),
     })),
+    certificates: certificates.error ? [] : (certificates.data as Record<string, unknown>[]).map((row) => ({
+      id: String(row.id),
+      userId: String(row.user_id),
+      enrollmentId: String(row.enrollment_id ?? ""),
+      rollNumber: String(row.roll_number),
+      studentName: String(row.student_name),
+      courseName: String(row.course_name),
+      issuedAt: String(row.issued_at),
+      serial: String(row.serial),
+    } satisfies Certificate)),
   };
 }
 
@@ -163,6 +174,16 @@ export async function pushRemote(state: Database) {
       user_id: row.userId,
       challenge: row.challenge,
       expires_at: row.expiresAt,
+    })));
+    await upsert(db, "certificates", (state.certificates ?? []).map((row: Certificate) => ({
+      id: row.id,
+      user_id: row.userId,
+      enrollment_id: row.enrollmentId,
+      roll_number: row.rollNumber,
+      student_name: row.studentName,
+      course_name: row.courseName,
+      issued_at: row.issuedAt,
+      serial: row.serial,
     })));
   } catch (error) {
     console.error("Supabase write failed", error);

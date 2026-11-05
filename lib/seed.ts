@@ -1,5 +1,5 @@
 import { hashPassword } from "@/lib/codec";
-import type { Batch, Database, User } from "@/lib/types";
+import type { Batch, Certificate, Database, User } from "@/lib/types";
 
 export const seedBatches: Batch[] = [
   {
@@ -112,7 +112,7 @@ export function createSeed(): Database {
         userId: "stu-ali",
         courseSlug: "3-month-certification",
         batchId: "b-3m-afternoon",
-        status: "active",
+        status: "completed",
         shopifyOrderId: null,
         enrolledAt: "2026-11-02T09:00:00.000Z",
       },
@@ -129,7 +129,31 @@ export function createSeed(): Database {
     passkeys: [],
     otps: [],
     challenges: [],
+    certificates: [aliCertificate()],
   };
+}
+
+function aliCertificate(): Certificate {
+  return {
+    id: "cert-ali",
+    userId: "stu-ali",
+    enrollmentId: "enr-ali",
+    rollNumber: "EFI-1024",
+    studentName: "Ali Raza",
+    courseName: "3-month certification",
+    issuedAt: "2026-11-05T08:00:00.000Z",
+    serial: "EFI-C-1024",
+  };
+}
+
+export function ensureCertificates(db: Database) {
+  if (!db.certificates) db.certificates = [];
+  if (db.certificates.some((item) => item.rollNumber === "EFI-1024")) return false;
+  if (!db.users.some((user) => user.id === "stu-ali")) return false;
+  db.certificates.push(aliCertificate());
+  const enrollment = db.enrollments.find((item) => item.id === "enr-ali");
+  if (enrollment && enrollment.status === "active") enrollment.status = "completed";
+  return true;
 }
 
 export async function ensurePasswords(db: Database) {

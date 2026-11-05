@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 
 const items = [
   { href: "/portal", label: "Desk" },
+  { href: "/portal/certificate", label: "Certificate" },
   { href: "/portal/account", label: "Account" },
 ];
 

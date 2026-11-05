@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { updateStudent } from "@/app/admin/actions";
+import { issueCertificate, updateStudent } from "@/app/admin/actions";
 import { courseBySlug } from "@/lib/catalog";
 import { readDb } from "@/lib/db";
 import { siteOrigin } from "@/lib/session";
@@ -25,10 +25,11 @@ export default async function StudentPage({
       user,
       enrollment: db.enrollments.find((item) => item.userId === user.id) ?? null,
       batches: db.batches,
+      certificate: db.certificates.find((item) => item.userId === user.id) ?? null,
     };
   });
   if (!data) notFound();
-  const { user, enrollment, batches } = data;
+  const { user, enrollment, batches, certificate } = data;
   const course = courseBySlug(enrollment?.courseSlug ?? "");
   const headerList = await headers();
   const host = headerList.get("x-forwarded-host") ?? headerList.get("host");
@@ -52,6 +53,14 @@ export default async function StudentPage({
           <h2>{user.rollNumber}</h2>
           <p className="help">{course?.name} · {user.onboarded ? "Password is set." : "Waiting for the student to open the QR."}</p>
           <p className="mono" style={{ wordBreak: "break-all" }}>{onboardUrl}</p>
+          {certificate ? (
+            <p><a href={`/api/certificates/${encodeURIComponent(certificate.rollNumber)}`}>Download {certificate.serial}</a></p>
+          ) : (
+            <form action={issueCertificate}>
+              <input type="hidden" name="id" value={user.id} />
+              <button className="btn" type="submit">Issue certificate</button>
+            </form>
+          )}
         </div>
       </div>
       <form className="panel form-grid" action={updateStudent}>

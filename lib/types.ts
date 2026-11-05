@@ -66,6 +66,17 @@ export interface Challenge {
   expiresAt: string;
 }
 
+export interface Certificate {
+  id: string;
+  userId: string;
+  enrollmentId: string;
+  rollNumber: string;
+  studentName: string;
+  courseName: string;
+  issuedAt: string;
+  serial: string;
+}
+
 export interface Database {
   users: User[];
   batches: Batch[];
@@ -73,4 +84,5 @@ export interface Database {
   passkeys: Passkey[];
   otps: Otp[];
   challenges: Challenge[];
+  certificates: Certificate[];
 }
