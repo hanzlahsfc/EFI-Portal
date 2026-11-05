@@ -1,0 +1,56 @@
+import type { Metadata } from "next";
+import { courseBySlug } from "@/lib/catalog";
+import { requireUser } from "@/lib/auth";
+import { readDb } from "@/lib/db";
+
+export const metadata: Metadata = { title: "Student desk" };
+
+export default async function PortalHome() {
+  const user = await requireUser("student");
+  const view = await readDb((db) => ({
+    batch: db.batches.find((item) => item.id === user.batchId) ?? null,
+    enrollments: db.enrollments
+      .filter((item) => item.userId === user.id)
+      .map((enrollment) => ({
+        enrollment,
+        batch: db.batches.find((item) => item.id === enrollment.batchId) ?? null,
+      })),
+  }));
+
+  return (
+    <div className="stack">
+      <div>
+        <p className="kicker">EFI&gt; {user.rollNumber}</p>
+        <h1 style={{ fontSize: 48 }}>{user.fullName}</h1>
+      </div>
+      <div className="metrics">
+        <div className="metric"><span>Roll</span><strong style={{ fontSize: 28 }}>{user.rollNumber}</strong></div>
+        <div className="metric"><span>Phone</span><strong style={{ fontSize: 22 }}>{user.phone}</strong></div>
+        <div className="metric"><span>CNIC</span><strong style={{ fontSize: 22 }}>{user.cnic || "—"}</strong></div>
+        <div className="metric"><span>Batch</span><strong style={{ fontSize: 22 }}>{view.batch?.name ?? "—"}</strong></div>
+      </div>
+      <div className="panel">
+        <h2>Enrollment</h2>
+        {view.enrollments.length === 0 ? <p className="help">No course is on this record yet.</p> : null}
+        <div className="table-wrap">
+          <table>
+            <thead><tr><th>Course</th><th>Schedule</th><th>Status</th><th>Shopify order</th></tr></thead>
+            <tbody>
+              {view.enrollments.map(({ enrollment, batch }) => {
+                const course = courseBySlug(enrollment.courseSlug);
+                return (
+                  <tr key={enrollment.id}>
+                    <td>{course?.name ?? enrollment.courseSlug}</td>
+                    <td>{batch ? `${batch.days} · ${batch.time}` : "—"}</td>
+                    <td><span className={enrollment.status === "active" ? "badge live" : "badge"}>{enrollment.status}</span></td>
+                    <td className="mono">{enrollment.shopifyOrderId ?? "—"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}

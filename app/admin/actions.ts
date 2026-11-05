@@ -1,0 +1,128 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { courseBySlug } from "@/lib/catalog";
+import { hashPassword, randomId, verifyPassword } from "@/lib/codec";
+import { emailTaken, nextRoll, writeDb } from "@/lib/db";
+import { requireUser } from "@/lib/auth";
+import { cleanCnic, cleanEmail, cleanName, cleanPassword, cleanPhone } from "@/lib/validate";
+import type { EnrollmentStatus } from "@/lib/types";
+
+function fail(path: string, message: string): never {
+  redirect(`${path}?error=${encodeURIComponent(message)}`);
+}
+
+export async function createStudent(formData: FormData) {
+  await requireUser("staff");
+  const fullName = cleanName(formData.get("fullName"));
+  const email = cleanEmail(formData.get("email"));
+  const phone = cleanPhone(formData.get("phone"));
+  const cnic = cleanCnic(formData.get("cnic"));
+  const batchId = String(formData.get("batchId") ?? "");
+  if (!fullName || !email || !phone || cnic === null) fail("/admin/students/new", "Check the name, email, phone, and CNIC.");
+
+  const id = randomId(9);
+  const error = await writeDb((db) => {
+    if (emailTaken(db, email)) return "That email is already on the roll.";
+    const batch = db.batches.find((item) => item.id === batchId);
+    if (!batch || !courseBySlug(batch.courseSlug)) return "Choose a batch.";
+    const taken = db.enrollments.filter((item) => item.batchId === batch.id && item.status !== "withdrawn").length;
+    if (taken >= batch.seats) return "That batch is full.";
+    db.users.push({
+      id,
+      role: "student",
+      fullName,
+      email,
+      phone,
+      cnic,
+      rollNumber: nextRoll(db),
+      batchId: batch.id,
+      qrToken: randomId(18),
+      onboarded: false,
+      passwordHash: null,
+      shopifyCustomerId: null,
+      createdAt: new Date().toISOString(),
+    });
+    db.enrollments.push({
+      id: randomId(9),
+      userId: id,
+      courseSlug: batch.courseSlug,
+      batchId: batch.id,
+      status: "invited",
+      shopifyOrderId: null,
+      enrolledAt: new Date().toISOString(),
+    });
+    return null;
+  });
+  if (error) fail("/admin/students/new", error);
+  redirect(`/admin/students/${id}`);
+}
+
+export async function updateStudent(formData: FormData) {
+  await requireUser("staff");
+  const id = String(formData.get("id") ?? "");
+  const fullName = cleanName(formData.get("fullName"));
+  const email = cleanEmail(formData.get("email"));
+  const phone = cleanPhone(formData.get("phone"));
+  const cnic = cleanCnic(formData.get("cnic"));
+  const batchId = String(formData.get("batchId") ?? "");
+  const status = String(formData.get("status") ?? "") as EnrollmentStatus;
+  const allowed: EnrollmentStatus[] = ["invited", "active", "completed", "withdrawn"];
+  if (!fullName || !email || !phone || cnic === null || !allowed.includes(status)) {
+    fail(`/admin/students/${id}`, "Check the student details.");
+  }
+
+  const error = await writeDb((db) => {
+    const user = db.users.find((item) => item.id === id && item.role === "student");
+    const batch = db.batches.find((item) => item.id === batchId);
+    if (!user || !batch) return "That student or batch was not found.";
+    if (emailTaken(db, email, user.id)) return "That email is already on the roll.";
+    user.fullName = fullName;
+    user.email = email;
+    user.phone = phone;
+    user.cnic = cnic;
+    user.batchId = batch.id;
+    const enrollment = db.enrollments.find((item) => item.userId === user.id);
+    if (enrollment) {
+      enrollment.batchId = batch.id;
+      enrollment.courseSlug = batch.courseSlug;
+      enrollment.status = status;
+    }
+    return null;
+  });
+  if (error) fail(`/admin/students/${id}`, error);
+  redirect(`/admin/students/${id}?notice=Saved`);
+}
+
+export async function createBatch(formData: FormData) {
+  await requireUser("staff");
+  const name = cleanName(formData.get("name"));
+  const courseSlug = String(formData.get("courseSlug") ?? "");
+  const days = String(formData.get("days") ?? "").trim();
+  const time = String(formData.get("time") ?? "").trim();
+  const startDate = String(formData.get("startDate") ?? "");
+  const endDate = String(formData.get("endDate") ?? "");
+  const seats = Number(formData.get("seats"));
+  if (!name || !courseBySlug(courseSlug) || !days || !time || !/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate) || seats < 1) {
+    fail("/admin/batches", "Check the batch name, course, dates, and seats.");
+  }
+  await writeDb((db) => {
+    db.batches.push({ id: randomId(8), courseSlug, name, days, time, startDate, endDate, seats });
+  });
+  redirect("/admin/batches?notice=Batch+added");
+}
+
+export async function changeStaffPassword(formData: FormData) {
+  const user = await requireUser("staff");
+  const current = String(formData.get("current") ?? "");
+  const next = cleanPassword(formData.get("next"));
+  if (!next) fail("/admin/account", "Use at least 8 characters.");
+  const error = await writeDb(async (db) => {
+    const staff = db.users.find((item) => item.id === user.id);
+    if (!staff || !(await verifyPassword(current, staff.passwordHash))) return "The current password does not match.";
+    staff.passwordHash = await hashPassword(next);
+    return null;
+  });
+  if (error) fail("/admin/account", error);
+  redirect("/admin/account?notice=Password+updated");
+}
