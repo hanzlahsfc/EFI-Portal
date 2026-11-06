@@ -159,6 +159,7 @@ export function ensureCertificates(db: Database) {
 }
 
 export async function ensurePasswords(db: Database) {
+  if (process.env.DEMO_MODE === "0") return false;
   const adminPassword = process.env.DEMO_ADMIN_PASSWORD || "efi-staff-demo";
   const studentPassword = process.env.DEMO_STUDENT_PASSWORD || "efi-student-demo";
   let changed = false;
