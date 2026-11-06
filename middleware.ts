@@ -11,6 +11,14 @@ function hostArea(host: string): "student" | "admin" | null {
 const PROTECTED = ["/portal", "/admin"];
 
 export async function middleware(request: NextRequest) {
+  try {
+    return await handle(request);
+  } catch {
+    return NextResponse.next();
+  }
+}
+
+async function handle(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const host = request.headers.get("host") || "";
   const area = hostArea(host);
