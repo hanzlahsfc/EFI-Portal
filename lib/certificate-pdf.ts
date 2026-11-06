@@ -28,13 +28,16 @@ export async function renderCertificate(cert: Certificate) {
   const display = await pdf.embedFont(fs.readFileSync(path.join(process.cwd(), "assets/fonts/barlow-condensed-bold.ttf")));
   const body = await pdf.embedFont(fs.readFileSync(path.join(process.cwd(), "assets/fonts/barlow-regular.ttf")));
   const logo = await pdf.embedPng(fs.readFileSync(path.join(process.cwd(), "public/brand/efi-logo.png")));
-  const gearPaths = [...fs.readFileSync(path.join(process.cwd(), "public/assets/efi-gears.svg"), "utf8").matchAll(/<path d="([^"]+)"/g)].map((m) => m[1]);
-  const gearStroke = rgb(0.73, 0.75, 0.79);
+  const gearSvg = fs.readFileSync(path.join(process.cwd(), "public/assets/efi-gears.svg"), "utf8");
+  const gearPaths = [...gearSvg.matchAll(/<path d="([^"]+)" fill=/g)].map((m) => m[1]);
+  const gearRings = [...gearSvg.matchAll(/<circle cx="([\d.]+)" cy="([\d.]+)" r="([\d.]+)"/g)].map((m) => m.slice(1).map(Number));
+  const gearFill = rgb(0.945, 0.95, 0.957);
+  const gearLine = rgb(0.84, 0.855, 0.87);
 
   page.drawRectangle({ x: 0, y: 0, width, height, color: rgb(1, 1, 1) });
-  for (const d of gearPaths.slice(0, 3)) {
-    page.drawSvgPath(d, { x: -100, y: 260, scale: 0.8, color: rgb(0.85, 0.86, 0.89), opacity: 0.5, borderColor: gearStroke, borderWidth: 3, borderOpacity: 0.3 });
-    page.drawSvgPath(d, { x: 680, y: height - 75, scale: 0.5, color: rgb(0.85, 0.86, 0.89), opacity: 0.4, borderColor: gearStroke, borderWidth: 3, borderOpacity: 0.22 });
+  for (const [ox, oy, scale] of [[width - 430, height + 10, 0.62], [-230, 330, 0.62]]) {
+    for (const d of gearPaths) page.drawSvgPath(d, { x: ox, y: oy, scale, color: gearFill, borderColor: gearLine, borderWidth: 1.6 });
+    for (const [cx, cy, r] of gearRings) page.drawCircle({ x: ox + cx * scale, y: oy - cy * scale, size: r * scale, borderColor: gearLine, borderWidth: 1.2 });
   }
   page.drawRectangle({ x: 16, y: 16, width: width - 32, height: height - 32, borderColor: asphalt, borderWidth: 3 });
   page.drawRectangle({ x: 24, y: 24, width: width - 48, height: height - 48, borderColor: red, borderWidth: 1.25 });

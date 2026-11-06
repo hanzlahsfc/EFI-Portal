@@ -411,5 +411,9 @@ button.ed-enroll { border: 0; cursor: pointer; font-family: inherit; }
   .ed-social a { min-height: 44px; display: inline-flex; align-items: center; }
 }
 
-/* Gear/circuit watermark across the white page */
-.ed { background-image: url("/assets/efi-gears.svg"); background-repeat: repeat; background-size: 700px; }
+/* Gear watermark: one cluster per light section, alternating sides */
+.ed-courses, .ed-time { background-image: url("/assets/efi-gears.svg"); background-repeat: no-repeat; background-position: right -170px top -70px; background-size: 460px; }
+.ed-learn, .ed-after { background-image: url("/assets/efi-gears-left.svg"); background-repeat: no-repeat; background-position: left -170px top -70px; background-size: 460px; }
+@media (max-width: 720px) {
+  .ed-courses, .ed-time, .ed-learn, .ed-after { background-size: 300px; }
+}
