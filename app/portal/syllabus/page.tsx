@@ -24,13 +24,23 @@ export default async function SyllabusPage() {
         <section className="panel" key={enrollment.id}>
           <h2>{course?.name ?? enrollment.courseSlug}</h2>
           <ol className="modules">
-            {summary?.modules.map(({ module, row }, index) => (
+            {summary?.modules.map(({ module, row }) => (
               <li key={module.id}>
-                <span>{module.code}</span>
-                <div>
-                  <h3>{module.title}</h3>
-                  <p>{module.summary} · {module.hours} lab hours · {row?.completed ? "Completed" : "Not yet"}{index >= 0 && row?.testScore !== null && row?.testScore !== undefined ? ` · test ${row.testScore}` : ""}</p>
-                </div>
+                <details>
+                  <summary>
+                    <span>{module.code}</span>
+                    <div>
+                      <h3>{module.title}</h3>
+                      <p>{module.hours} lab hours · {row?.completed ? "Completed" : "Not yet"}{row?.testScore !== null && row?.testScore !== undefined ? ` · test ${row.testScore}` : ""}</p>
+                    </div>
+                  </summary>
+                  <div className="module-detail">
+                    <p>{module.summary}</p>
+                    <ul>
+                      {module.topics.map((topic) => <li key={topic}>{topic}</li>)}
+                    </ul>
+                  </div>
+                </details>
               </li>
             ))}
           </ol>

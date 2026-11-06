@@ -4,6 +4,7 @@ export type Module = {
   title: string;
   summary: string;
   hours: number;
+  topics: string[];
 };
 
 export type Course = {
@@ -39,6 +40,13 @@ export const modules: Module[] = [
     title: "Electrical fundamentals and safety",
     summary: "Meters, basic circuits, and workshop safety.",
     hours: 24,
+    topics: [
+      "Workshop safety, PPE, and isolation procedures",
+      "Voltage, current, resistance, and Ohm's law",
+      "Digital multimeter: volts, amps, continuity, and diode test",
+      "Series, parallel circuits, and voltage-drop testing",
+      "Reading basic wiring diagrams",
+    ],
   },
   {
     id: "m2",
@@ -46,6 +54,13 @@ export const modules: Module[] = [
     title: "Battery, starting, and charging",
     summary: "Batteries, alternators, and starter circuits.",
     hours: 24,
+    topics: [
+      "Battery construction, ratings, and service",
+      "Load testing, charging, and parasitic drain checks",
+      "Starter motor circuits and solenoid diagnosis",
+      "Alternator output and regulator testing",
+      "Jump-start and battery replacement procedures",
+    ],
   },
   {
     id: "m3",
@@ -53,6 +68,13 @@ export const modules: Module[] = [
     title: "Wiring and relay systems",
     summary: "Harness layout, central wiring, and relays.",
     hours: 28,
+    topics: [
+      "Harness layout, connectors, and routing",
+      "Wire gauge, insulation, and terminal repair",
+      "Relay types, pinouts, and switching circuits",
+      "Central junction and fuse boxes, power distribution",
+      "Tracing open circuits, shorts, and grounds",
+    ],
   },
   {
     id: "m4",
@@ -60,6 +82,13 @@ export const modules: Module[] = [
     title: "Sensors, actuators, and EFI",
     summary: "Engine sensors, injectors, and the EFI system.",
     hours: 36,
+    topics: [
+      "Temperature, MAP, MAF, and oxygen sensors",
+      "Throttle, crank, and cam position sensors",
+      "Fuel injectors, pumps, and EFI system overview",
+      "Sensor signal testing with meter and scope basics",
+      "Actuator operation: idle control, EVAP, and relays",
+    ],
   },
   {
     id: "m5",
@@ -67,6 +96,13 @@ export const modules: Module[] = [
     title: "Diagnostics and scanners",
     summary: "OBD-II connection and computerized diagnostics.",
     hours: 36,
+    topics: [
+      "OBD-II ports, protocols, and data link connectors",
+      "Reading and clearing diagnostic trouble codes",
+      "Live data, freeze frame, and readiness monitors",
+      "Guided fault-finding workflows on real vehicles",
+      "Common EFI fault patterns and case work",
+    ],
   },
   {
     id: "m6",
@@ -74,6 +110,13 @@ export const modules: Module[] = [
     title: "CAN bus and module programming",
     summary: "ECU, body modules, and key-fob programming.",
     hours: 40,
+    topics: [
+      "CAN bus topology, signals, and termination",
+      "ECU, BCM, and networked modules overview",
+      "Module coding and configuration basics",
+      "Key-fob and immobilizer programming",
+      "Network fault diagnosis and case studies",
+    ],
   },
 ];
 
