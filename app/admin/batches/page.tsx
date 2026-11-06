@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { createBatch } from "@/app/admin/actions";
 import { courseBySlug, courses } from "@/lib/catalog";
 import { readDb } from "@/lib/db";
@@ -15,7 +16,7 @@ export default async function BatchesPage({ searchParams }: { searchParams: Prom
   return (
     <div className="stack">
       <div>
-        <p className="kicker">EFI&gt; schedule</p>
+        <p className="kicker">schedule</p>
         <h1 style={{ fontSize: 48 }}>Batches</h1>
       </div>
       {query.error ? <p className="error">{query.error}</p> : null}
@@ -26,14 +27,17 @@ export default async function BatchesPage({ searchParams }: { searchParams: Prom
             <tr><th>Batch</th><th>Course</th><th>When</th><th>Seats</th></tr>
           </thead>
           <tbody>
-            {rows.map(({ batch, taken }) => (
-              <tr key={batch.id}>
-                <td>{batch.name}</td>
-                <td>{courseBySlug(batch.courseSlug)?.name}</td>
-                <td>{batch.days} · {batch.time}</td>
-                <td className="mono">{taken}/{batch.seats}</td>
-              </tr>
-            ))}
+            {rows.map(({ batch, taken }) => {
+              const href = `/admin/batches/${batch.id}`;
+              return (
+                <tr className="click-row" key={batch.id}>
+                  <td><Link href={href}>{batch.name}</Link></td>
+                  <td><Link href={href}>{courseBySlug(batch.courseSlug)?.name}</Link></td>
+                  <td><Link href={href}>{batch.days} · {batch.time}</Link></td>
+                  <td className="mono"><Link href={href}>{taken}/{batch.seats}</Link></td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

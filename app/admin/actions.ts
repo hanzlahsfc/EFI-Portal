@@ -95,8 +95,7 @@ export async function updateStudent(formData: FormData) {
   redirect(`/admin/students/${id}?notice=Saved`);
 }
 
-export async function createBatch(formData: FormData) {
-  await requireUser("staff");
+function readBatchFields(formData: FormData) {
   const name = cleanName(formData.get("name"));
   const courseSlug = String(formData.get("courseSlug") ?? "");
   const days = String(formData.get("days") ?? "").trim();
@@ -104,13 +103,58 @@ export async function createBatch(formData: FormData) {
   const startDate = String(formData.get("startDate") ?? "");
   const endDate = String(formData.get("endDate") ?? "");
   const seats = Number(formData.get("seats"));
-  if (!name || !courseBySlug(courseSlug) || !days || !time || !/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate) || seats < 1) {
-    fail("/admin/batches", "Check the batch name, course, dates, and seats.");
-  }
+  const date = /^\d{4}-\d{2}-\d{2}$/;
+  const valid = Boolean(
+    name && courseBySlug(courseSlug) && days && time && date.test(startDate) && date.test(endDate) && endDate >= startDate && Number.isInteger(seats) && seats >= 1,
+  );
+  return { name, courseSlug, days, time, startDate, endDate, seats, valid };
+}
+
+export async function createBatch(formData: FormData) {
+  await requireUser("staff");
+  const fields = readBatchFields(formData);
+  const name = fields.name;
+  if (!fields.valid || !name) fail("/admin/batches", "Check the batch name, course, dates, and seats.");
   await writeDb((db) => {
-    db.batches.push({ id: randomId(8), courseSlug, name, days, time, startDate, endDate, seats });
+    db.batches.push({
+      id: randomId(8),
+      courseSlug: fields.courseSlug,
+      name,
+      days: fields.days,
+      time: fields.time,
+      startDate: fields.startDate,
+      endDate: fields.endDate,
+      seats: fields.seats,
+    });
   });
   redirect("/admin/batches?notice=Batch+added");
+}
+
+export async function updateBatch(formData: FormData) {
+  await requireUser("staff");
+  const id = String(formData.get("id") ?? "");
+  const fields = readBatchFields(formData);
+  const name = fields.name;
+  if (!fields.valid || !name) fail(`/admin/batches/${id}`, "Check the batch name, course, dates, and seats.");
+  const error = await writeDb((db) => {
+    const batch = db.batches.find((item) => item.id === id);
+    if (!batch) return "That batch was not found.";
+    const taken = db.enrollments.filter((item) => item.batchId === batch.id && item.status !== "withdrawn").length;
+    if (fields.seats < taken) return `This batch already has ${taken} students. Seats cannot be lower than that.`;
+    batch.name = name;
+    batch.courseSlug = fields.courseSlug;
+    batch.days = fields.days;
+    batch.time = fields.time;
+    batch.startDate = fields.startDate;
+    batch.endDate = fields.endDate;
+    batch.seats = fields.seats;
+    for (const enrollment of db.enrollments) {
+      if (enrollment.batchId === batch.id) enrollment.courseSlug = fields.courseSlug;
+    }
+    return null;
+  });
+  if (error) fail(`/admin/batches/${id}`, error);
+  redirect(`/admin/batches/${id}?notice=Batch+saved`);
 }
 
 export async function changeStaffPassword(formData: FormData) {

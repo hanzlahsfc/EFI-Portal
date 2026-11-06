@@ -3,7 +3,7 @@ import Link from "next/link";
 import { courseBySlug } from "@/lib/catalog";
 import { requireUser } from "@/lib/auth";
 import { readDb } from "@/lib/db";
-import { rowsFor, summarize } from "@/lib/progress";
+import { batchMeets, rowsFor, summarize } from "@/lib/progress";
 
 export const metadata: Metadata = { title: "Student desk" };
 
@@ -28,9 +28,12 @@ export default async function PortalHome() {
   return (
     <div className="stack">
       <div>
-        <p className="kicker">EFI&gt; {user.rollNumber}</p>
+        <p className="kicker">{user.rollNumber}</p>
         <h1 style={{ fontSize: 48 }}>{user.fullName}</h1>
       </div>
+      {view.enrollments.filter(({ enrollment, batch }) => batch && (enrollment.status === "active" || enrollment.status === "invited") && batchMeets(batch)).map(({ enrollment, batch }) => (
+        <p className="ok-note" key={enrollment.id}>Class today · {batch?.days} · {batch?.time}</p>
+      ))}
       <div className="metrics">
         <div className="metric"><span>Roll</span><strong style={{ fontSize: 28 }}>{user.rollNumber}</strong></div>
         <div className="metric"><span>Phone</span><strong style={{ fontSize: 22 }}>{user.phone}</strong></div>

@@ -1,21 +1,18 @@
 import type { Metadata } from "next";
-import { courses, institute, pkr } from "@/lib/catalog";
+import { courses, pkr } from "@/lib/catalog";
 
 export const metadata: Metadata = { title: "Timetable" };
 
 export default function TimetablePage() {
   return (
-    <>
-      <header className="page-hero">
-        <div className="wrap">
-          <p className="kicker">EFI&gt; weekly schedule</p>
-          <h1>Timetable</h1>
-          <p>Weekday classes run Monday to Thursday. Weekend batches run Friday to Sunday. Desk hours are {institute.hours}.</p>
-        </div>
-      </header>
-      <section className="section">
-        <div className="wrap">
-          <div className="table-wrap">
+    <div className="ed">
+      <section className="ed-time">
+        <div className="ed-wrap">
+          <header className="ed-head">
+            <h2>Weekly timetable</h2>
+            <p>Weekday classes run Monday to Thursday. Weekend batches run Friday to Sunday. The printed sheet is below the table.</p>
+          </header>
+          <div className="ed-tablewrap">
             <table>
               <thead>
                 <tr>
@@ -37,12 +34,12 @@ export default function TimetablePage() {
               </tbody>
             </table>
           </div>
-          <figure className="sheet">
+          <figure className="ed-sheet">
             <figcaption>Timetable sheet</figcaption>
-            <img src="/photos/timetable.jpg" alt="Weekly training timetable" />
+            <img src="/harness/efi-timetable.jpeg" alt="Weekly training timetable" />
           </figure>
         </div>
       </section>
-    </>
+    </div>
   );
 }

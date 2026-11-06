@@ -28,8 +28,11 @@ export async function renderCertificate(cert: Certificate) {
   const display = await pdf.embedFont(fs.readFileSync(path.join(process.cwd(), "assets/fonts/barlow-condensed-bold.ttf")));
   const body = await pdf.embedFont(fs.readFileSync(path.join(process.cwd(), "assets/fonts/barlow-regular.ttf")));
   const logo = await pdf.embedPng(fs.readFileSync(path.join(process.cwd(), "public/brand/efi-logo.png")));
+  const gears = await pdf.embedPng(fs.readFileSync(path.join(process.cwd(), "public/assets/efi-gears.png")));
 
   page.drawRectangle({ x: 0, y: 0, width, height, color: rgb(1, 1, 1) });
+  page.drawImage(gears, { x: 0, y: 0, width, height: width * (gears.height / gears.width), opacity: 0.07 });
+  page.drawImage(gears, { x: width * 0.45, y: height - width * 0.5 * (gears.height / gears.width), width: width * 0.55, height: width * 0.55 * (gears.height / gears.width), opacity: 0.05 });
   page.drawRectangle({ x: 16, y: 16, width: width - 32, height: height - 32, borderColor: asphalt, borderWidth: 3 });
   page.drawRectangle({ x: 24, y: 24, width: width - 48, height: height - 48, borderColor: red, borderWidth: 1.25 });
 

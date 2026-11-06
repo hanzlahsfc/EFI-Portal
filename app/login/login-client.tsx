@@ -96,7 +96,7 @@ export function LoginClient({
 
   return (
     <div className="auth-card">
-      <p className="kicker">EFI&gt; member desk</p>
+      <p className="kicker">member desk</p>
       <h1 style={{ fontSize: 46, margin: "8px 0 12px" }}>{step === "2fa" ? "Email code" : "Sign in"}</h1>
       {notice ? <p className="ok-note">{notice}</p> : null}
       {error ? <p className="error">{error}</p> : null}

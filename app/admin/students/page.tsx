@@ -18,7 +18,7 @@ export default async function StudentsPage() {
     <div className="stack">
       <div className="row-between">
         <div>
-          <p className="kicker">EFI&gt; roll</p>
+          <p className="kicker">roll</p>
           <h1 style={{ fontSize: 48 }}>Students</h1>
         </div>
         <Link className="btn" href="/admin/students/new">Add student</Link>
@@ -34,14 +34,17 @@ export default async function StudentsPage() {
             </tr>
           </thead>
           <tbody>
-            {rows.map(({ user, enrollment, course }) => (
-              <tr key={user.id}>
-                <td className="mono">{user.rollNumber}</td>
-                <td><Link href={`/admin/students/${user.id}`}>{user.fullName}</Link></td>
-                <td>{course?.name ?? "—"}</td>
-                <td><span className={enrollment?.status === "active" ? "badge live" : "badge"}>{enrollment?.status ?? "—"}</span></td>
-              </tr>
-            ))}
+            {rows.map(({ user, enrollment, course }) => {
+              const href = `/admin/students/${user.id}`;
+              return (
+                <tr className="click-row" key={user.id}>
+                  <td className="mono"><Link href={href}>{user.rollNumber}</Link></td>
+                  <td><Link href={href}>{user.fullName}</Link></td>
+                  <td><Link href={href}>{course?.name ?? "—"}</Link></td>
+                  <td><Link href={href}><span className={enrollment?.status === "active" ? "badge live" : "badge"}>{enrollment?.status ?? "—"}</span></Link></td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

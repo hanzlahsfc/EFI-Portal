@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CertificatePreview } from "@/components/certificate-preview";
 import { requireUser } from "@/lib/auth";
 import { readDb } from "@/lib/db";
 
@@ -14,15 +15,14 @@ export default async function PortalCertificatePage() {
   return (
     <div className="stack">
       <div>
-        <p className="kicker">EFI&gt; {user.rollNumber}</p>
+        <p className="kicker">{user.rollNumber}</p>
         <h1 style={{ fontSize: 48 }}>Certificate</h1>
       </div>
       {cert ? (
-        <div className="panel">
-          <h2>{cert.courseName}</h2>
-          <p className="help">Issued {issued} · {cert.serial}</p>
-          <a className="btn" href={`/api/certificates/${encodeURIComponent(cert.rollNumber)}`}>Download PDF</a>
-        </div>
+        <>
+          <CertificatePreview cert={cert} issued={issued} />
+          <p><a className="btn" href={`/api/certificates/${encodeURIComponent(cert.rollNumber)}`}>Download PDF</a></p>
+        </>
       ) : (
         <div className="panel">
           <p className="help">Your certificate is not issued yet. The desk files it under {user.rollNumber} when the course is complete.</p>

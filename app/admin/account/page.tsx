@@ -13,7 +13,7 @@ export default async function StaffAccountPage({ searchParams }: { searchParams:
   return (
     <div className="stack">
       <div>
-        <p className="kicker">EFI&gt; staff</p>
+        <p className="kicker">staff</p>
         <h1 style={{ fontSize: 48 }}>Account</h1>
       </div>
       {query.error ? <p className="error">{query.error}</p> : null}

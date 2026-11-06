@@ -17,7 +17,7 @@ export default async function SyllabusPage() {
   return (
     <div className="stack">
       <div>
-        <p className="kicker">EFI&gt; {user.rollNumber}</p>
+        <p className="kicker">{user.rollNumber}</p>
         <h1 style={{ fontSize: 48 }}>Syllabus</h1>
       </div>
       {blocks.map(({ enrollment, course, summary }) => (

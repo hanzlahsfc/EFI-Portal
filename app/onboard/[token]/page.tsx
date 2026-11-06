@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { activateFromQr } from "@/app/portal/actions";
+import { SiteFooter } from "@/components/site-footer";
+import { SignedHeader } from "@/components/signed-header";
 import { courseBySlug } from "@/lib/catalog";
 import { readDb } from "@/lib/db";
 
@@ -29,17 +31,16 @@ export default async function OnboardPage({
   });
 
   return (
-    <main className="auth-shell">
-      <section className="auth-copy">
-        <Link href="/" className="logo-pad" style={{ alignSelf: "flex-start", marginBottom: 28 }}>
-          <img src="/brand/efi-logo.png" alt="EFI Future Intelligence Institute" />
-        </Link>
-        <p className="kicker">EFI&gt; QR onboard</p>
-        <h1>Confirm this is your seat.</h1>
-        <p>The institute printed this code for one student. Set a password to open the desk.</p>
-      </section>
-      <section className="auth-panel">
-        <div className="auth-card stack">
+    <>
+      <SignedHeader />
+      <main className="ed">
+        <section className="ed-learn">
+          <div className="ed-wrap" style={{ maxWidth: 560 }}>
+            <header className="ed-head">
+              <h2>Confirm this is your seat</h2>
+              <p>The institute printed this code for one student. Set a password to open the desk.</p>
+            </header>
+            <div className="auth-card stack">
           {!data ? <p className="error">This QR is not on the EFI roll. Ask the desk to print a new one.</p> : null}
           {data?.user.onboarded ? (
             <>
@@ -64,8 +65,11 @@ export default async function OnboardPage({
               </form>
             </>
           ) : null}
-        </div>
-      </section>
-    </main>
+            </div>
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

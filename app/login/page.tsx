@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { redirect } from "next/navigation";
+import { SiteFooter } from "@/components/site-footer";
+import { SignedHeader } from "@/components/signed-header";
+import { currentUser } from "@/lib/auth";
 import { demoMode } from "@/lib/session";
 import { LoginClient } from "./login-client";
 
@@ -11,25 +14,25 @@ export default async function LoginPage({
   searchParams: Promise<{ step?: string; error?: string; notice?: string; next?: string }>;
 }) {
   const query = await searchParams;
+  const user = await currentUser();
+  if (user && query.step !== "2fa") redirect(user.role === "staff" ? "/admin" : "/portal");
   return (
-    <main className="auth-shell">
-      <section className="auth-copy">
-        <Link href="/" className="logo-pad" style={{ alignSelf: "flex-start", marginBottom: 28 }}>
-          <img src="/brand/efi-logo.png" alt="EFI Future Intelligence Institute" />
-        </Link>
-        <p className="kicker">Lahore lab · student desk</p>
-        <h1>Your roll number, course, and class record.</h1>
-        <p>Sign in with a password and email code, Google, or a passkey saved on this device.</p>
-      </section>
-      <section className="auth-panel">
-        <LoginClient
-          demo={demoMode()}
-          initialStep={query.step === "2fa" ? "2fa" : "id"}
-          initialError={query.error}
-          notice={query.notice}
-          nextPath={query.next}
-        />
-      </section>
-    </main>
+    <>
+      <SignedHeader />
+      <main className="ed">
+        <section className="ed-learn">
+          <div className="ed-wrap" style={{ maxWidth: 520 }}>
+            <LoginClient
+              demo={demoMode()}
+              initialStep={query.step === "2fa" ? "2fa" : "id"}
+              initialError={query.error}
+              notice={query.notice}
+              nextPath={query.next}
+            />
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

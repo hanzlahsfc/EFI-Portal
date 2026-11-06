@@ -2,59 +2,47 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { institute } from "@/lib/catalog";
 
 const links = [
-  ["/", "Home"],
-  ["/courses", "Courses"],
-  ["/timetable", "Timetable"],
-  ["/certificate", "Certificate"],
-  ["/contact", "Contact"],
+  { href: "/", label: "Home" },
+  { href: "/courses", label: "Catalog" },
+  { href: "/contact", label: "Contact" },
 ];
 
-export function SiteHeader() {
+export function SiteHeader({ account }: { account?: { href: string; label: string } | null }) {
   const path = usePathname();
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [path]);
-
+  const accountLink = account ? (
+    <Link className="ed-login" href={account.href}>{account.label}</Link>
+  ) : (
+    <Link className="ed-login" href="/login">Login</Link>
+  );
   return (
-    <>
-      <div className="topbar">
-        <div className="wrap">
-          <span>EFI / Lahore</span>
-          <span>{institute.hours}</span>
-          <a href={`tel:${institute.phoneTel}`}>{institute.phoneDisplay}</a>
-        </div>
-      </div>
-      <div className="brandband">
-        <Link href="/" className="logo-pad" aria-label={institute.name}>
-          <img src="/brand/efi-logo.png" alt={institute.name} />
+    <div className="ed-header">
+      <div className="ed-bar">
+        <Link className="ed-logo" href="/" aria-label="EFI Future Intelligence Institute">
+          <img src="/harness/efi-logo.png" alt="EFI Future Intelligence Institute" width={543} height={459} />
         </Link>
+        <input className="ed-check" id="ed-nav-toggle" type="checkbox" />
+        <label className="ed-burger" htmlFor="ed-nav-toggle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+          <span>Menu</span>
+        </label>
+        <nav className="ed-nav" aria-label="Main">
+          {links.map((link) => {
+            const current = link.href === "/" ? path === "/" : path.startsWith(link.href);
+            return (
+              <Link key={link.href} href={link.href} className={current ? "is-active" : undefined} aria-current={current ? "page" : undefined}>
+                {link.label}
+              </Link>
+            );
+          })}
+          {account ? <Link className="ed-nav__login" href={account.href}>{account.label}</Link> : <Link className="ed-nav__login" href="/login">Login</Link>}
+        </nav>
+        {accountLink}
+        <Link className="ed-enroll" href="/courses">Enroll</Link>
       </div>
-      <nav className={open ? "nav open" : "nav"} aria-label="Primary">
-        <div className="wrap">
-          <button className="nav-burger" type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
-            {open ? "Close" : "Menu"}
-          </button>
-          <div className="nav-links">
-            {links.map(([href, label]) => {
-              const current = href === "/" ? path === "/" : path.startsWith(href);
-              return (
-                <Link key={href} href={href} aria-current={current ? "page" : undefined}>
-                  {label}
-                </Link>
-              );
-            })}
-          </div>
-          <Link className="nav-portal" href="/login">
-            Student portal
-          </Link>
-        </div>
-      </nav>
-    </>
+    </div>
   );
 }
