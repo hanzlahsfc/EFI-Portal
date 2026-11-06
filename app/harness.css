@@ -412,4 +412,4 @@ button.ed-enroll { border: 0; cursor: pointer; font-family: inherit; }
 }
 
 /* Gear/circuit watermark across the white page */
-.ed { background-image: url("/assets/efi-gears.svg"); background-repeat: repeat; background-size: 700px; background-attachment: fixed; }
+.ed { background-image: url("/assets/efi-gears.svg"); background-repeat: repeat; background-size: 700px; }
