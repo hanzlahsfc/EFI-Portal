@@ -343,7 +343,8 @@ button.ed-enroll { border: 0; cursor: pointer; font-family: inherit; }
   font-size: 13px;
   font-weight: 500;
 }
-.desk .desk-main { width: min(1140px, calc(100% - 32px)); margin: 36px auto 72px; }
+.desk .desk-main { width: min(1140px, calc(100% - 32px)); margin: 36px auto 0; padding-bottom: 72px; }
+.desk .table-wrap table { min-width: 560px; }
 .desk a.metric { display: block; color: inherit; text-decoration: none; cursor: pointer; }
 .desk a.metric:hover { border-color: #c41216; }
 .desk .click-row td { padding: 0; }

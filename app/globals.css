@@ -232,7 +232,7 @@ h1, h2, h3, h4 {
 .price { font-family: var(--mono); color: var(--red); font-weight: 500; }
 
 .modules { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.modules li {
+.modules > li {
   background: white;
   border: 1px solid var(--line);
 }
@@ -429,12 +429,14 @@ th {
 .metric span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .metric strong { display: block; margin-top: 6px; font-family: var(--display); font-size: 34px; }
 
-.stack { display: grid; gap: 16px; }
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.stack > .btn { justify-self: start; }
 .row-between { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
-.field.span-2 { grid-column: span 2; }
+.span-2 { grid-column: span 2; }
 .field span, .check span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.check { display: flex; align-items: center; gap: 8px; align-self: flex-end; padding-bottom: 12px; }
 .field input, .field select, .field textarea {
   background: white;
   border: 1px solid #cfd3d8;
@@ -488,7 +490,7 @@ table a { color: var(--red); }
   .rail div { min-width: 120px; }
   .hero-copy { padding: 48px 20px 36px; }
   .grid-2, .contact-grid, .auth-shell, .qr-card, .form-grid { grid-template-columns: 1fr; }
-  .field.span-2 { grid-column: auto; }
+  .span-2 { grid-column: auto; }
   .apply .wrap, .head-row, .topbar .wrap, .foot-bar { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 720px) {
