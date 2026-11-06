@@ -508,4 +508,4 @@ table a { color: var(--red); }
 }
 
 /* Gear/circuit watermark — sits on --paper, covered by dark sections */
-body { background-image: url("/assets/efi-gears.png"); background-repeat: repeat; background-size: 700px; }
+body { background-image: url("/assets/efi-gears.svg"); background-repeat: repeat; background-size: 700px; }

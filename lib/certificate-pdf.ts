@@ -28,11 +28,14 @@ export async function renderCertificate(cert: Certificate) {
   const display = await pdf.embedFont(fs.readFileSync(path.join(process.cwd(), "assets/fonts/barlow-condensed-bold.ttf")));
   const body = await pdf.embedFont(fs.readFileSync(path.join(process.cwd(), "assets/fonts/barlow-regular.ttf")));
   const logo = await pdf.embedPng(fs.readFileSync(path.join(process.cwd(), "public/brand/efi-logo.png")));
-  const gears = await pdf.embedPng(fs.readFileSync(path.join(process.cwd(), "public/assets/efi-gears.png")));
+  const gearPaths = [...fs.readFileSync(path.join(process.cwd(), "public/assets/efi-gears.svg"), "utf8").matchAll(/<path d="([^"]+)"/g)].map((m) => m[1]);
+  const gearStroke = rgb(0.73, 0.75, 0.79);
 
   page.drawRectangle({ x: 0, y: 0, width, height, color: rgb(1, 1, 1) });
-  page.drawImage(gears, { x: 0, y: 0, width, height: width * (gears.height / gears.width), opacity: 0.07 });
-  page.drawImage(gears, { x: width * 0.45, y: height - width * 0.5 * (gears.height / gears.width), width: width * 0.55, height: width * 0.55 * (gears.height / gears.width), opacity: 0.05 });
+  for (const d of gearPaths.slice(0, 3)) {
+    page.drawSvgPath(d, { x: -100, y: 260, scale: 0.8, color: rgb(0.85, 0.86, 0.89), opacity: 0.5, borderColor: gearStroke, borderWidth: 3, borderOpacity: 0.3 });
+    page.drawSvgPath(d, { x: 680, y: height - 75, scale: 0.5, color: rgb(0.85, 0.86, 0.89), opacity: 0.4, borderColor: gearStroke, borderWidth: 3, borderOpacity: 0.22 });
+  }
   page.drawRectangle({ x: 16, y: 16, width: width - 32, height: height - 32, borderColor: asphalt, borderWidth: 3 });
   page.drawRectangle({ x: 24, y: 24, width: width - 48, height: height - 48, borderColor: red, borderWidth: 1.25 });
 
