@@ -410,3 +410,7 @@ button.ed-enroll { border: 0; cursor: pointer; font-family: inherit; }
   .ed-foot img { height: 68px; max-width: 70%; }
   .ed-social a { min-height: 44px; display: inline-flex; align-items: center; }
 }
+
+/* Gear/circuit watermark across the white page */
+.ed { background-image: url("/assets/efi-gears.svg"); background-repeat: repeat; background-size: 700px; background-attachment: fixed; }
+.ed-card, .ed-boxes > * { background-image: url("/assets/efi-gears.svg"); background-repeat: no-repeat; background-position: right -60px bottom -60px; background-size: 280px; background-blend-mode: multiply; }
