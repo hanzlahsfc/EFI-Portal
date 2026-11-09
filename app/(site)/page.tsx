@@ -51,7 +51,7 @@ export default function HomePage() {
   return (
     <div className="ed">
       <section className="ed-hero">
-        <img src="/assets/efi-hero.jpeg" alt="" width={1920} height={1280} />
+        <img src="/harness/efi-hero-photo.jpg" alt="" width={1920} height={1280} />
         <div className="ed-hero__shade" />
         <div className="ed-wrap ed-hero__copy">
           <p className="ed-kicker">Lahore · Admissions open</p>
@@ -170,7 +170,7 @@ export default function HomePage() {
 
       <section className="ed-after">
         <div className="ed-wrap ed-after__grid">
-          <img src="/assets/efi-hero.jpeg" alt="Workshop bay used for EFI training" width={1200} height={800} />
+          <img src="/harness/efi-hero-photo.jpg" alt="Workshop bay used for EFI training" width={1200} height={800} />
           <div>
             <header className="ed-head">
               <h2>Where the training is used</h2>
