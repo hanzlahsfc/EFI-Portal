@@ -39,6 +39,7 @@ export default function ContactPage() {
               </div>
             </article>
           </div>
+          <img src="/assets/efi-here.jpeg" alt="EFI Future Intelligence Institute" width={377} height={566} style={{ display: "block", margin: "28px auto 0", maxWidth: "min(340px, 80%)", height: "auto", border: "1px solid var(--line)", background: "#fff" }} />
         </div>
       </section>
     </div>

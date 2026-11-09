@@ -36,7 +36,7 @@ export default function TimetablePage() {
           </div>
           <figure className="ed-sheet">
             <figcaption>Timetable sheet</figcaption>
-            <img src="/harness/efi-timetable.jpeg" alt="Weekly training timetable" />
+            <img src="/assets/efi-schedule.jpeg" alt="Weekly training timetable" />
           </figure>
         </div>
       </section>
