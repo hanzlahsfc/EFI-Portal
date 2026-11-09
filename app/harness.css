@@ -2,7 +2,7 @@
 .ed,
 .ed-foot,
 .ed-page {
-  --red: #c41216;
+  --red: #e50000;
   --ink: #1c1c1c;
   --muted: #555;
   --line: #e6e6e6;
@@ -100,7 +100,7 @@
   padding: 11px 18px;
   border-radius: 6px;
 }
-.ed-enroll:hover { background: #a30e12; color: #fff; }
+.ed-enroll:hover { background: #7b0100; color: #fff; }
 
 .ed { background: #fff; overflow-x: clip; }
 .ed a { text-decoration: none; }
@@ -131,7 +131,7 @@
   border: 0;
   cursor: pointer;
 }
-.ed-btn:hover { background: #a30e12; }
+.ed-btn:hover { background: #7b0100; }
 .ed-btn--ghost { background: transparent; box-shadow: inset 0 0 0 2px #fff; }
 .ed-btn--ghost:hover,
 .ed-btn--light { background: #fff; color: var(--ink); }
@@ -213,7 +213,7 @@
 .ed-cert__line { display: flex; max-width: 560px; min-width: 0; }
 .ed-cert input[type="search"] { flex: 1; min-width: 0; border: 0; background: #fff; color: #222; font: inherit; font-size: 16px; padding: 12px 14px; }
 .ed-cert button { border: 0; background: var(--red); color: #fff; font: inherit; font-size: 14px; font-weight: 500; letter-spacing: 0.03em; text-transform: uppercase; padding: 0 18px; cursor: pointer; }
-.ed-cert button:hover { background: #a30e12; }
+.ed-cert button:hover { background: #7b0100; }
 .ed-note { margin: 12px 0 0; color: #b7bcc2; font-size: 14px; }
 .ed-cert .ed-result { margin: 18px 0 0; font-size: 16px; line-height: 1.5; }
 .ed-cert .ed-result a { color: #fff; text-decoration: underline; }
@@ -235,7 +235,7 @@
 .ed-foot li,
 .ed-foot p { margin: 0 0 8px; }
 .ed-social { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 12px; }
-.ed-social a { color: #fff; font-size: 14px; border-bottom: 1px solid #c41216; padding: 6px 0; }
+.ed-social a { color: #fff; font-size: 14px; border-bottom: 1px solid #e50000; padding: 6px 0; }
 .ed-foot__bar { max-width: 1180px; margin: 0 auto; border-top: 1px solid #343a42; padding: 16px 0 18px; display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
 
 .ed-page { background: #fff; padding: 48px 0 72px; }
@@ -332,13 +332,13 @@ button.ed-enroll { border: 0; cursor: pointer; font-family: inherit; }
   display: block;
   width: 42px;
   height: 3px;
-  background: #c41216;
+  background: #e50000;
   margin-top: 10px;
 }
 .desk .kicker,
 .ed .kicker {
   font-family: var(--font-roboto), Roboto, sans-serif;
-  color: #c41216;
+  color: #e50000;
   letter-spacing: 0.04em;
   font-size: 13px;
   font-weight: 500;
@@ -346,7 +346,7 @@ button.ed-enroll { border: 0; cursor: pointer; font-family: inherit; }
 .desk .desk-main { width: min(1140px, calc(100% - 32px)); margin: 36px auto 0; padding-bottom: 72px; }
 .desk .table-wrap table { min-width: 560px; }
 .desk a.metric { display: block; color: inherit; text-decoration: none; cursor: pointer; }
-.desk a.metric:hover { border-color: #c41216; }
+.desk a.metric:hover { border-color: #e50000; }
 .desk .click-row td { padding: 0; }
 .desk .click-row td a { display: block; padding: 14px 16px; color: inherit; text-decoration: none; }
 .desk .click-row:hover td { background: #fafafa; }
@@ -363,7 +363,7 @@ button.ed-enroll { border: 0; cursor: pointer; font-family: inherit; }
   clip-path: none;
   border-radius: 0;
   font-family: var(--font-roboto), Roboto, sans-serif;
-  background: #c41216;
+  background: #e50000;
   letter-spacing: 0.03em;
   font-weight: 500;
 }
@@ -379,7 +379,7 @@ button.ed-enroll { border: 0; cursor: pointer; font-family: inherit; }
   font-size: 14px;
   font-weight: 500;
 }
-.desk th { background: #c41216; color: #fff; font-family: var(--font-roboto), Roboto, sans-serif; letter-spacing: 0.02em; }
+.desk th { background: #e50000; color: #fff; font-family: var(--font-roboto), Roboto, sans-serif; letter-spacing: 0.02em; }
 .desk .metric,
 .desk .badge,
 .desk .field span,
@@ -393,7 +393,7 @@ button.ed-enroll { border: 0; cursor: pointer; font-family: inherit; }
   letter-spacing: normal;
 }
 .desk .metric strong { font-family: var(--font-roboto), Roboto, sans-serif; letter-spacing: normal; text-transform: none; }
-.desk .progress-track span { background: #c41216; }
+.desk .progress-track span { background: #e50000; }
 .desk .certificate,
 .desk .certificate-name,
 .desk .certificate-course,
