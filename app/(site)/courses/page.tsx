@@ -52,7 +52,7 @@ export default function CoursesPage() {
           </ol>
           <figure className="ed-sheet">
             <figcaption>Course outline</figcaption>
-            <img src="/harness/efi-outline.jpeg" alt="EFI comprehensive automotive course outline" />
+            <img src="/assets/efi-banner.jpeg" alt="EFI comprehensive automotive course outline" />
           </figure>
           <p className="ed-note" style={{ color: "#555" }}>
             Seat requests go to the institute on WhatsApp.{" "}
