@@ -131,7 +131,7 @@ export default function HomePage() {
           </ol>
           <figure className="ed-sheet">
             <figcaption>Course outline</figcaption>
-            <img src="/assets/efi-banner.jpeg" alt="EFI comprehensive automotive course outline" width={1376} height={768} />
+            <img src="/assets/efi-banner.jpeg" alt="EFI comprehensive automotive course outline" width={2172} height={724} />
           </figure>
         </div>
       </section>
