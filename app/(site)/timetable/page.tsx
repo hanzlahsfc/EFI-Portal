@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { courses, pkr } from "@/lib/catalog";
 
-export const metadata: Metadata = { title: "Timetable" };
+export const metadata: Metadata = {
+  title: "Batch Timetable",
+  description:
+    "Weekly training schedule at EFI Future Intelligence Institute — weekday batches Monday to Thursday and weekend batches Friday to Sunday.",
+};
 
 export default function TimetablePage() {
   return (

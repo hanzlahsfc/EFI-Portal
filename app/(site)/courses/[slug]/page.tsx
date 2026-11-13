@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requestSeat } from "@/app/(site)/courses/actions";
 import { courseBySlug, courses, institute, modulesFor, pkr, whatsappLink } from "@/lib/catalog";
+import { JsonLd } from "@/lib/seo";
 
 const photos: Record<string, string> = {
   "3-month-certification": "/harness/efi-thumb-1.jpg",
@@ -18,7 +19,11 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const course = courseBySlug(slug);
-  return { title: course?.name ?? "Course" };
+  if (!course) return { title: "Course" };
+  return {
+    title: `${course.name[0].toUpperCase()}${course.name.slice(1)} — ${course.days} ${course.time}`,
+    description: `${course.summary} ${course.duration}, ${course.days}, fee ${pkr(course.feePkr)}. Auto EFI and electrical training at EFI Future Intelligence Institute, Lahore.`,
+  };
 }
 
 export default async function CoursePage({
@@ -33,9 +38,28 @@ export default async function CoursePage({
   const course = courseBySlug(slug);
   if (!course) notFound();
   const outline = modulesFor(course);
+  const courseJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: `${course.name[0].toUpperCase()}${course.name.slice(1)} — Auto EFI Training`,
+    description: course.summary,
+    provider: {
+      "@type": "EducationalOrganization",
+      name: institute.name,
+      sameAs: "https://efifutureintelligence.institute",
+      address: { "@type": "PostalAddress", streetAddress: "53B, Aitchison Society", addressLocality: "Lahore", addressCountry: "PK" },
+    },
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseSchedule: { "@type": "Schedule", repeatFrequency: "Weekly", byDay: course.days, startTime: course.time },
+      courseMode: "onsite",
+    },
+    offers: { "@type": "Offer", price: course.feePkr, priceCurrency: "PKR", category: "Paid" },
+  };
 
   return (
     <div className="ed">
+      <JsonLd data={courseJsonLd} />
       <section className="ed-learn">
         <div className="ed-wrap">
           <header className="ed-head">

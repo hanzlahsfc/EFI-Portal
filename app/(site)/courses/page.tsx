@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { courses, modules, pkr, whatsappLink } from "@/lib/catalog";
 
-export const metadata: Metadata = { title: "Courses" };
+export const metadata: Metadata = {
+  title: "Courses & Fees",
+  description:
+    "Auto EFI and automotive electrical courses in Lahore — 3-month and 6-month certifications plus a professional technical program. Fees, modules, and batch schedules.",
+};
 
 const photos: Record<string, string> = {
   "3-month-certification": "/harness/efi-thumb-1.jpg",

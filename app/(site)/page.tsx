@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { modules } from "@/lib/catalog";
+import { modules, institute } from "@/lib/catalog";
+import { JsonLd } from "@/lib/seo";
 
 const cards = [
   {
@@ -47,9 +48,24 @@ const rows = [
   ["Pro and technical", "Fri-Sun", "6:00-9:00PM", "PKR 50,000"],
 ];
 
+const orgJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  name: institute.name,
+  url: "https://efifutureintelligence.institute",
+  logo: "https://efifutureintelligence.institute/brand/efi-logo.png",
+  telephone: institute.phoneTel,
+  address: { "@type": "PostalAddress", streetAddress: "53B, Aitchison Society", addressLocality: "Lahore", addressCountry: "PK" },
+  openingHoursSpecification: [
+    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday"], opens: "14:00", closes: "18:00" },
+    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Friday", "Saturday", "Sunday"], opens: "15:00", closes: "21:00" },
+  ],
+};
+
 export default function HomePage() {
   return (
     <div className="ed">
+      <JsonLd data={orgJsonLd} />
       <section className="ed-hero">
         <img src="/harness/efi-hero-photo.jpg" alt="" width={1920} height={1280} />
         <div className="ed-hero__shade" />

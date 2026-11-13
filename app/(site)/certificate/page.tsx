@@ -4,7 +4,11 @@ import { CertificatePreview } from "@/components/certificate-preview";
 import { institute } from "@/lib/catalog";
 import { readDb } from "@/lib/db";
 
-export const metadata: Metadata = { title: "Certificate" };
+export const metadata: Metadata = {
+  title: "Verify a Certificate",
+  description:
+    "Verify an EFI Future Intelligence Institute certificate by roll number. Enter a roll number like EFI-1024 to confirm a graduate's course, issue date, and serial.",
+};
 
 function issuedOn(value: string) {
   return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Karachi" }).format(new Date(value));

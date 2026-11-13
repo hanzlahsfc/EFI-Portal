@@ -9,8 +9,27 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variabl
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-roboto" });
 
 export const metadata: Metadata = {
-  title: { default: "EFI Future Intelligence Institute", template: "%s · EFI" },
-  description: "Automotive electrical and EFI diagnostics training in Lahore. Weekday and weekend lab batches, ISO-registered certificates.",
+  metadataBase: new URL("https://efifutureintelligence.institute"),
+  title: { default: "EFI Future Intelligence Institute — Auto EFI & Electrical Courses in Lahore", template: "%s · EFI Institute" },
+  description:
+    "Hands-on automotive electrical and EFI diagnostics training in Lahore. 3-month and 6-month certified courses, weekend batches, verifiable roll-number certificates.",
+  keywords: [
+    "EFI course Lahore",
+    "auto electrician course Lahore",
+    "automotive diagnostics training Pakistan",
+    "EFI diagnostics certification",
+    "auto electrical course",
+  ],
+  openGraph: {
+    siteName: "EFI Future Intelligence Institute",
+    title: "EFI Future Intelligence Institute — Auto EFI & Electrical Courses in Lahore",
+    description:
+      "Hands-on automotive electrical and EFI diagnostics training in Lahore. Certified courses, weekend batches, verifiable certificates.",
+    url: "https://efifutureintelligence.institute",
+    type: "website",
+    images: [{ url: "/assets/efi-hero.jpeg", width: 1920, height: 1080, alt: "EFI Future Intelligence Institute" }],
+  },
+  twitter: { card: "summary_large_image" },
   icons: { icon: "/brand/efi-logo.png" },
 };
 

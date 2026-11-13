@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { institute, whatsappLink } from "@/lib/catalog";
 
-export const metadata: Metadata = { title: "Contact" };
+export const metadata: Metadata = {
+  title: "Contact & Location",
+  description:
+    "Visit EFI Future Intelligence Institute at 53B Aitchison Society, Lahore. Call or WhatsApp +92 370 438 1083 to ask about batches, fees, and admissions.",
+};
 
 export default function ContactPage() {
   const map = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(institute.address)}`;
