@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Barlow, Barlow_Condensed, IBM_Plex_Mono, Roboto } from "next/font/google";
 import "./globals.css";
 import "./harness.css";
@@ -36,7 +37,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${body.variable} ${display.variable} ${mono.variable} ${roboto.variable}`}>{children}</body>
+      <body className={`${body.variable} ${display.variable} ${mono.variable} ${roboto.variable}`}>
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-24RRDPL098" strategy="afterInteractive" />
+        <Script id="ga4" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-24RRDPL098');
+        `}</Script>
+        {children}
+      </body>
     </html>
   );
 }
