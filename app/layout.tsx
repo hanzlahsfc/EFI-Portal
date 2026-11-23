@@ -55,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           s.parentNode.insertBefore(t,s)}(window, document,'script',
           'https://connect.facebook.net/en_US/fbevents.js');
           fbq('init', '5556167904608209');
+          fbq('init', '1454669306252556');
           fbq('track', 'PageView');
         `}</Script>
         {children}
